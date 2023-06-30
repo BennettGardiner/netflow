@@ -1,0 +1,425 @@
+openapi: 3.0.3
+info:
+  title: Your Project API
+  version: 1.0.0
+  description: Your project description
+paths:
+  /api/arcs/:
+    get:
+      operationId: arcs_list
+      tags:
+      - arcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Arc'
+          description: ''
+    post:
+      operationId: arcs_create
+      tags:
+      - arcs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arc'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Arc'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Arc'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Arc'
+          description: ''
+  /api/arcs/{id}/:
+    get:
+      operationId: arcs_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this arc.
+        required: true
+      tags:
+      - arcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Arc'
+          description: ''
+    put:
+      operationId: arcs_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this arc.
+        required: true
+      tags:
+      - arcs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arc'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Arc'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Arc'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Arc'
+          description: ''
+    patch:
+      operationId: arcs_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this arc.
+        required: true
+      tags:
+      - arcs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedArc'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedArc'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedArc'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Arc'
+          description: ''
+    delete:
+      operationId: arcs_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this arc.
+        required: true
+      tags:
+      - arcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/nodes/:
+    get:
+      operationId: nodes_list
+      tags:
+      - nodes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Node'
+          description: ''
+    post:
+      operationId: nodes_create
+      tags:
+      - nodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Node'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Node'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Node'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+          description: ''
+  /api/nodes/{id}/:
+    get:
+      operationId: nodes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this node.
+        required: true
+      tags:
+      - nodes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+          description: ''
+    put:
+      operationId: nodes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this node.
+        required: true
+      tags:
+      - nodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Node'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Node'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Node'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+          description: ''
+    patch:
+      operationId: nodes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this node.
+        required: true
+      tags:
+      - nodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+          description: ''
+    delete:
+      operationId: nodes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this node.
+        required: true
+      tags:
+      - nodes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/solve/:
+    post:
+      operationId: solve_create
+      tags:
+      - solve
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Network'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Network'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Network'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Network'
+          description: ''
+components:
+  schemas:
+    Arc:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        start_node:
+          type: integer
+        end_node:
+          type: integer
+      required:
+      - end_node
+      - id
+      - start_node
+    Network:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Node'
+        arcs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Arc'
+      required:
+      - arcs
+      - nodes
+    Node:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+      required:
+      - id
+      - type
+    PatchedArc:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        start_node:
+          type: integer
+        end_node:
+          type: integer
+    PatchedNode:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+    TypeEnum:
+      enum:
+      - supply
+      - demand
+      - storage
+      type: string
+      description: |-
+        * `supply` - Supply
+        * `demand` - Demand
+        * `storage` - Storage
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

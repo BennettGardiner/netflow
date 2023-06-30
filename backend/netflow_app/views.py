@@ -1,0 +1,51 @@
+import logging
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from .engine.solver import solve_network_flow
+
+from .models import Node, Arc
+from .serializers import NodeSerializer, ArcSerializer, NetworkSerializer
+
+logger = logging.getLogger(__name__)
+
+class NodeViewSet(viewsets.ModelViewSet):
+    queryset = Node.objects.all()
+    serializer_class = NodeSerializer
+
+
+class ArcViewSet(viewsets.ModelViewSet):
+    queryset = Arc.objects.all()
+    serializer_class = ArcSerializer
+
+    def perform_create(self, serializer):
+        source_id = self.request.data['start_node']
+        target_id = self.request.data['end_node']
+        serializer.save(start_node_id=source_id, end_node_id=target_id)
+
+    def perform_update(self, serializer):
+        source_id = self.request.data['start_node']
+        target_id = self.request.data['end_node']
+        serializer.save(start_node_id=source_id, end_node_id=target_id)
+        
+
+class SolveView(APIView):
+    def post(self, request):
+        # Retrieve all available nodes and arcs from the database
+        nodes = Node.objects.all()
+        arcs = Arc.objects.all()
+
+        # Serialize the nodes and arcs using the NetworkSerializer
+        network_serializer = NetworkSerializer({"nodes": nodes, "arcs": arcs})
+
+        # Retrieve the serialized data
+        serialized_data = network_serializer.data
+        print(serialized_data)
+        
+        # Use the serialized data to kick off the solving process
+        data = solve_network_flow(serialized_data)
+        
+        # Return the solution or any other response as required
+        return Response({"status": "success", "message": "Problem solved"}, status=status.HTTP_200_OK)
