@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useCallback, useState } from 'react';
 import ReactFlow, {
   useNodesState,
@@ -9,6 +8,8 @@ import ReactFlow, {
   Background,
   addEdge,
 } from 'reactflow';
+import axios from 'axios';
+
 import Sidebar from './Sidebar';
 import NodeForm from './NodeForm';
 import './colours.css';
@@ -53,7 +54,7 @@ export default function App() {
       y: event.clientY - reactFlowBounds.top,
     };
 
-    setNodeData({ type: nodeType, position: position }); // Set nodeData
+    setNodeData({ type: nodeType, position: position, }); // Set nodeData
     setIsModalOpen(true);
   }, []);
 
@@ -62,6 +63,27 @@ export default function App() {
   };
 
   const onConnect = useCallback((params) => {
+    const newArc = {
+        start_node: params.source,
+        end_node: params.target,
+    };
+    console.log(newArc);
+    fetch('http://127.0.0.1:8000/api/arcs/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newArc),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log('Arc created:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        console.log(params.source)
+        console.log(params.target.id)
+    });
     const newEdge = {
       source: params.source,
       target: params.target,
@@ -70,14 +92,71 @@ export default function App() {
     };
     setEdges((edges) => addEdge(newEdge, edges));
   }, [setEdges]);
+  
+  const handleSubmit = (nodeInfo, nodeData) => {
+    // Here, we're making a POST request to create a new node,
+    // then adding the new node to our state.
+    const newNodeData = {
+      ...nodeData,
+      node_name: nodeInfo.nodeLabel, 
+    };
+    fetch('http://127.0.0.1:8000/api/nodes/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newNodeData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Node created:', data);
+        const newNode = {
+          id: data.id.toString(),
+          type: nodeData ? nodeData.type : '', // Use nodeData if available, otherwise use an empty string
+          position: nodeData ? nodeData.position : null, // Use nodeData if available, otherwise use null
+          data: { label: `${nodeInfo.nodeLabel}` },
+          style: {
+            backgroundColor:
+              nodeData && nodeData.type === 'supply'
+                ? 'var(--supply-green)'
+                : nodeData && nodeData.type === 'demand'
+                ? 'var(--demand-red)'
+                : nodeData && nodeData.type === 'storage'
+                ? 'var(--storage-blue)'
+                : 'var(--default-color)', // default color
+          },
+        };
+        setNodes((ns) => ns.concat(newNode));
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    setIsModalOpen(false);
+  };
+
+  const handleSolveClick = useCallback(async () => {
+    try {
+      await axios.post('http://127.0.0.1:8000/api/solve/');
+    } catch (error) {
+      console.error('An error occurred while sending data to the engine:', error);
+    }
+  }, []);
 
   return (
     <div style={{ height: '100vh', display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1, position: 'relative' }} onDragOver={onDragOver} onDrop={onDrop}>
+      <Sidebar onSolveClick={handleSolveClick} />
+      <div style={{ flex: 1, position: 'relative' }} onDragOver={onDragOver} onDrop={onDrop} >
         <ReactFlowProvider>
-          <ReactFlow nodes={nodes} edges={edges} onConnect={onConnect}>
-            <MiniMap nodeColor={nodeColor} />
+          <ReactFlow 
+          nodes={nodes} 
+          edges={edges} 
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onConnect={onConnect}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          >
+            <MiniMap nodeColor={nodeColor} pannable={true}/>
             <Controls />
             <Background color="#aaa" gap={16} />
           </ReactFlow>
@@ -85,42 +164,8 @@ export default function App() {
         <NodeForm
           isOpen={isModalOpen}
           onRequestClose={handleRequestClose}
-          onSubmit={(nodeInfo) => {
-            // Here, we're making a POST request to create a new node,
-            // then adding the new node to our state.
-            fetch('http://localhost:8000/api/nodes/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(nodeInfo),
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                console.log('Node created:', data);
-                const newNode = {
-                  id: data.id.toString(),
-                  type: nodeData.type, // Use nodeData
-                  position: nodeData.position, // Use nodeData
-                  data: { label: `${nodeInfo.nodeLabel}` },
-                  style: {
-                    backgroundColor:
-                      nodeData.type === 'supply'
-                        ? 'var(--supply-green)'
-                        : nodeData.type === 'demand'
-                        ? 'var(--demand-red)'
-                        : nodeData.type === 'storage'
-                        ? 'var(--storage-blue)'
-                        : 'var(--default-color)', // default color
-                  },
-                };
-                setNodes((ns) => ns.concat(newNode));
-              })
-              .catch((error) => {
-                console.error('Error:', error);
-              });
-            setIsModalOpen(false);
-          }}
+          onSubmit={handleSubmit}
+          nodeData={nodeData} // Add this line
         />
       </div>
     </div>
