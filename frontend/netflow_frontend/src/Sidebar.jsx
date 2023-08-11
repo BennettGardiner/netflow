@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './Sidebar.css';
 
-const nodeTypes = ['supply', 'demand', 'storage'];
+const nodeTypes = [
+  { label: 'Supply', value: 'supply', reactFlowType: 'input' },
+  { label: 'Demand', value: 'demand', reactFlowType: 'output' },
+  { label: 'Storage', value: 'storage', reactFlowType: 'default' }
+];
 
 function Sidebar({ onSolveClick }) {
   return (
@@ -9,16 +13,16 @@ function Sidebar({ onSolveClick }) {
       <div className="sidebar">
         <h3 className="sidebar__title">Node Types</h3>
         <div className="sidebar__nodes">
-          {nodeTypes.map((type) => (
-            <div
-              key={type}
-              className={`sidebar__node sidebar__node--${type}`}
-              onDragStart={(event) => event.dataTransfer.setData('application/reactflow', type)}
-              draggable
-            >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </div>
-          ))}
+        {nodeTypes.map((type) => (
+          <div
+            key={type.value}
+            className={`sidebar__node sidebar__node--${type.value}`}
+            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', type.reactFlowType)}
+            draggable
+          >
+            {type.label}
+          </div>
+        ))}
         </div>
         <button className="solve-button" onClick={onSolveClick}>Solve</button>
       </div>

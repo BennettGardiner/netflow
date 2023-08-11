@@ -19,13 +19,18 @@ import 'reactflow/dist/style.css';
 const initialNodes = [];
 const initialEdges = [];
 
+const nodeTypeMapping = {
+  input: 'supply',
+  output: 'demand',
+  default: 'storage',
+};
 const nodeColor = (node) => {
   switch (node.type) {
-    case 'supply':
+    case 'input':
       return 'var(--supply-green)';
-    case 'storage':
+    case 'default':
       return 'var(--storage-blue)';
-    case 'demand':
+    case 'output':
       return 'var(--demand-red)';
     default:
       return 'var(--default-color)';
@@ -47,8 +52,9 @@ export default function App() {
   const onDrop = useCallback((event) => {
     event.preventDefault();
 
-    const reactFlowBounds = document.querySelector('.react-flow__renderer').getBoundingClientRect();
+    const reactFlowBounds = document.querySelector('.react-flow__renderer').getBoundingClientRect();    
     const nodeType = event.dataTransfer.getData('application/reactflow');
+  
     const position = {
       x: event.clientX - reactFlowBounds.left,
       y: event.clientY - reactFlowBounds.top,
@@ -98,6 +104,7 @@ export default function App() {
     // then adding the new node to our state.
     const newNodeData = {
       ...nodeData,
+      type: nodeTypeMapping[nodeData.type], // Use mapped type
       node_name: nodeInfo.nodeLabel, 
     };
     fetch('http://127.0.0.1:8000/api/nodes/', {
@@ -107,7 +114,14 @@ export default function App() {
       },
       body: JSON.stringify(newNodeData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((err) => {
+            throw err; // Throw the error if response is not ok
+          });
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log('Node created:', data);
         const newNode = {
@@ -117,13 +131,13 @@ export default function App() {
           data: { label: `${nodeInfo.nodeLabel}` },
           style: {
             backgroundColor:
-              nodeData && nodeData.type === 'supply'
-                ? 'var(--supply-green)'
-                : nodeData && nodeData.type === 'demand'
-                ? 'var(--demand-red)'
-                : nodeData && nodeData.type === 'storage'
-                ? 'var(--storage-blue)'
-                : 'var(--default-color)', // default color
+            newNodeData.type === 'supply'
+              ? 'var(--supply-green)'
+              : newNodeData.type === 'demand'
+              ? 'var(--demand-red)'
+              : newNodeData.type === 'storage'
+              ? 'var(--storage-blue)'
+              : 'var(--default-color)', // default color
           },
         };
         setNodes((ns) => ns.concat(newNode));
