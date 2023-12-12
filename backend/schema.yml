@@ -6,9 +6,9 @@ info:
 paths:
   /api/arcs/:
     get:
-      operationId: arcs_list
+      operationId: api_arcs_list
       tags:
-      - arcs
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -23,9 +23,9 @@ paths:
                   $ref: '#/components/schemas/Arc'
           description: ''
     post:
-      operationId: arcs_create
+      operationId: api_arcs_create
       tags:
-      - arcs
+      - api
       requestBody:
         content:
           application/json:
@@ -51,7 +51,7 @@ paths:
           description: ''
   /api/arcs/{id}/:
     get:
-      operationId: arcs_retrieve
+      operationId: api_arcs_retrieve
       parameters:
       - in: path
         name: id
@@ -60,7 +60,7 @@ paths:
         description: A unique integer value identifying this arc.
         required: true
       tags:
-      - arcs
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -73,7 +73,7 @@ paths:
                 $ref: '#/components/schemas/Arc'
           description: ''
     put:
-      operationId: arcs_update
+      operationId: api_arcs_update
       parameters:
       - in: path
         name: id
@@ -82,7 +82,7 @@ paths:
         description: A unique integer value identifying this arc.
         required: true
       tags:
-      - arcs
+      - api
       requestBody:
         content:
           application/json:
@@ -107,7 +107,7 @@ paths:
                 $ref: '#/components/schemas/Arc'
           description: ''
     patch:
-      operationId: arcs_partial_update
+      operationId: api_arcs_partial_update
       parameters:
       - in: path
         name: id
@@ -116,7 +116,7 @@ paths:
         description: A unique integer value identifying this arc.
         required: true
       tags:
-      - arcs
+      - api
       requestBody:
         content:
           application/json:
@@ -140,7 +140,7 @@ paths:
                 $ref: '#/components/schemas/Arc'
           description: ''
     delete:
-      operationId: arcs_destroy
+      operationId: api_arcs_destroy
       parameters:
       - in: path
         name: id
@@ -149,7 +149,7 @@ paths:
         description: A unique integer value identifying this arc.
         required: true
       tags:
-      - arcs
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -159,9 +159,9 @@ paths:
           description: No response body
   /api/nodes/:
     get:
-      operationId: nodes_list
+      operationId: api_nodes_list
       tags:
-      - nodes
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -176,9 +176,9 @@ paths:
                   $ref: '#/components/schemas/Node'
           description: ''
     post:
-      operationId: nodes_create
+      operationId: api_nodes_create
       tags:
-      - nodes
+      - api
       requestBody:
         content:
           application/json:
@@ -204,7 +204,7 @@ paths:
           description: ''
   /api/nodes/{id}/:
     get:
-      operationId: nodes_retrieve
+      operationId: api_nodes_retrieve
       parameters:
       - in: path
         name: id
@@ -213,7 +213,7 @@ paths:
         description: A unique integer value identifying this node.
         required: true
       tags:
-      - nodes
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -226,7 +226,7 @@ paths:
                 $ref: '#/components/schemas/Node'
           description: ''
     put:
-      operationId: nodes_update
+      operationId: api_nodes_update
       parameters:
       - in: path
         name: id
@@ -235,7 +235,7 @@ paths:
         description: A unique integer value identifying this node.
         required: true
       tags:
-      - nodes
+      - api
       requestBody:
         content:
           application/json:
@@ -260,7 +260,7 @@ paths:
                 $ref: '#/components/schemas/Node'
           description: ''
     patch:
-      operationId: nodes_partial_update
+      operationId: api_nodes_partial_update
       parameters:
       - in: path
         name: id
@@ -269,7 +269,7 @@ paths:
         description: A unique integer value identifying this node.
         required: true
       tags:
-      - nodes
+      - api
       requestBody:
         content:
           application/json:
@@ -293,7 +293,7 @@ paths:
                 $ref: '#/components/schemas/Node'
           description: ''
     delete:
-      operationId: nodes_destroy
+      operationId: api_nodes_destroy
       parameters:
       - in: path
         name: id
@@ -302,7 +302,7 @@ paths:
         description: A unique integer value identifying this node.
         required: true
       tags:
-      - nodes
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -312,9 +312,9 @@ paths:
           description: No response body
   /api/solve/:
     post:
-      operationId: solve_create
+      operationId: api_solve_create
       tags:
-      - solve
+      - api
       requestBody:
         content:
           application/json:
@@ -350,7 +350,11 @@ components:
           type: integer
         end_node:
           type: integer
+        cost:
+          type: number
+          format: double
       required:
+      - cost
       - end_node
       - id
       - start_node
@@ -393,6 +397,9 @@ components:
           type: integer
         end_node:
           type: integer
+        cost:
+          type: number
+          format: double
     PatchedNode:
       type: object
       properties:

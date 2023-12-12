@@ -10,7 +10,7 @@ class NodeSerializer(serializers.ModelSerializer):
 class ArcSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arc
-        fields = ['id', 'start_node', 'end_node']
+        fields = ['id', 'start_node', 'end_node', 'cost']
     
 
 class NetworkSerializer(serializers.Serializer):

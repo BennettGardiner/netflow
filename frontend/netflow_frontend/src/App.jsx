@@ -93,7 +93,7 @@ export default function App() {
     const newEdge = {
       source: params.source,
       target: params.target,
-      type: 'step',
+      type: 'bezier',
       animated: true,
     };
     setEdges((edges) => addEdge(newEdge, edges));
