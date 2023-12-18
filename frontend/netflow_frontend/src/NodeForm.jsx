@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 
-function NodeForm({ isOpen, onRequestClose, onSubmit, nodeData }) { // Add nodeData here
+function NodeForm({ isOpen, onRequestClose, onSubmit, nodeData }) { 
   const [nodeInfo, setNodeInfo] = useState({
     nodeLabel: '',
   });
@@ -24,7 +24,6 @@ function NodeForm({ isOpen, onRequestClose, onSubmit, nodeData }) { // Add nodeD
             <input type="text" name="nodeLabel" onChange={handleChange} />
           </label>
         </div>
-        {/* Other fields... */}
         <button type="submit">Submit</button>
       </form>
     </Modal>
