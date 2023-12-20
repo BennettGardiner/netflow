@@ -21,7 +21,7 @@ from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView
 
-from netflow_app.views import NodeViewSet, ArcViewSet, SolveView
+from netflow_app.views import DemandNodeViewSet, NodeViewSet, ArcViewSet, SolveView, SupplyNodeViewSet
 
 router = DefaultRouter()
 router.register(
@@ -29,6 +29,8 @@ router.register(
     NodeViewSet,
     basename="api/nodes",
 )
+router.register("api/supply-nodes", SupplyNodeViewSet)
+router.register("api/demand-nodes", DemandNodeViewSet)
 router.register(
     "api/arcs",
     ArcViewSet,

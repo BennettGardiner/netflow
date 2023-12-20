@@ -7,14 +7,24 @@ from rest_framework.generics import GenericAPIView
 
 from .engine.solver import solve_network_flow
 
-from .models import Node, Arc
-from .serializers import NodeSerializer, ArcSerializer, NetworkSerializer
+from .models import DemandNode, Node, Arc, SupplyNode
+from .serializers import DemandNodeSerializer, NodeSerializer, ArcSerializer, NetworkSerializer, SupplyNodeSerializer
 
 logger = logging.getLogger(__name__)
 
 class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
+
+
+class SupplyNodeViewSet(viewsets.ModelViewSet):
+    queryset = SupplyNode.objects.all()
+    serializer_class = SupplyNodeSerializer
+
+
+class DemandNodeViewSet(viewsets.ModelViewSet):
+    queryset = DemandNode.objects.all()
+    serializer_class = DemandNodeSerializer
 
 
 class ArcViewSet(viewsets.ModelViewSet):

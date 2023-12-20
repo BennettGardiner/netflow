@@ -23,15 +23,11 @@ import ButtonEdge from './ButtonEdge';
 const initialNodes = [];
 const initialEdges = [];
 
-// Define custom edge types
-const edgeTypes = {
-  buttonedge: ButtonEdge, 
+const nodeTypes = {
 };
 
-const nodeTypeMapping = {
-  input: 'supply',
-  output: 'demand',
-  default: 'storage',
+const edgeTypes = {
+  buttonedge: ButtonEdge, 
 };
 
 const nodeColor = (node) => {
@@ -132,7 +128,7 @@ export default function App() {
   }, [setEdges]);
 
 
-  const handleSubmit = (nodeInfo, nodeData) => {
+/*   const handleSubmit = (nodeInfo, nodeData) => {
     // Here, we're making a POST request to create a new node,
     // then adding the new node to our state.
     const newNodeData = {
@@ -181,7 +177,65 @@ export default function App() {
         console.error('Error:', error);
       });
     setIsModalOpen(false);
-  };
+  }; */
+
+  const handleSubmit = (nodeInfo, nodeData) => {
+    let apiEndpoint;
+    let newNodeData = {
+        node_name: nodeInfo.nodeLabel, 
+    };
+
+    if (nodeData.type === 'input') {
+        apiEndpoint = 'http://127.0.0.1:8000/api/supply-nodes/';
+        newNodeData['supply_amount'] = parseFloat(nodeInfo.amount); // Add supply amount
+    } else if (nodeData.type === 'output') {
+        apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
+        newNodeData['demand_amount'] = parseFloat(nodeInfo.amount); // Add demand amount
+    } else {
+        console.error('Unsupported node type');
+        return;
+    }
+
+    fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newNodeData),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            return response.json().then((err) => {
+                throw err;
+            });
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log('Node created:', data);
+        const newNode = {
+            id: data.id.toString(),
+            type: nodeData.type, 
+            position: nodeData.position,
+            data: { 
+                label: nodeInfo.nodeLabel || "",
+                amount: nodeData.type === 'input' || nodeData.type === 'output' ? nodeInfo.amount : undefined,
+            },
+            style: {
+                backgroundColor: nodeColor({ type: nodeData.type }),
+                color: 'white',
+                fontSize: '22px',
+            },
+        };
+        setNodes((ns) => ns.concat(newNode));
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+    setIsModalOpen(false);
+};
+
+
 
   const handleSolveClick = useCallback(async () => {
     try {
@@ -205,8 +259,7 @@ export default function App() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           edgeTypes={edgeTypes}
-          nodeTypes={{}} 
-          // fitView
+          nodeTypes={nodeTypes}
           attributionPosition="top-right"
           connectionMode={ConnectionMode.Loose}
           >
