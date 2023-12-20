@@ -40,5 +40,6 @@ const customStyles = {
     position: 'relative',
     overflow: 'auto',
     maxHeight: '80%',
+    borderRadius: '10px',
   },
 };

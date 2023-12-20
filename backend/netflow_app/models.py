@@ -13,3 +13,4 @@ class Node(models.Model):
 class Arc(models.Model):
     start_node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name='outgoing_arcs')
     end_node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name='incoming_arcs')
+    cost = models.FloatField()

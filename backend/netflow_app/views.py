@@ -3,6 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.generics import GenericAPIView
 
 from .engine.solver import solve_network_flow
 
@@ -23,15 +24,19 @@ class ArcViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         source_id = self.request.data['start_node']
         target_id = self.request.data['end_node']
-        serializer.save(start_node_id=source_id, end_node_id=target_id)
+        cost = self.request.data['cost']
+        serializer.save(start_node_id=source_id, end_node_id=target_id, cost=cost)
 
     def perform_update(self, serializer):
         source_id = self.request.data['start_node']
         target_id = self.request.data['end_node']
-        serializer.save(start_node_id=source_id, end_node_id=target_id)
+        cost = self.request.data['cost']
+        serializer.save(start_node_id=source_id, end_node_id=target_id, cost=cost)
         
 
-class SolveView(APIView):
+class SolveView(GenericAPIView):
+    serializer_class = NetworkSerializer
+    
     def post(self, request):
         # Retrieve all available nodes and arcs from the database
         nodes = Node.objects.all()
