@@ -41,7 +41,7 @@ const ButtonEdge = ({
                         href={`#${id}`}
                         startOffset="50%"
                         textAnchor="middle"
-                        style={{ fontSize: '12px', fill: 'white' }}
+                        style={{ fontSize: '19px', fill: 'white' }}
                     >
                         {/* Empty tspan for buffer */}
                         <tspan dy="-0.4em" x="0"></tspan> 

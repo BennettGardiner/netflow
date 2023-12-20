@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 class Node(models.Model):
@@ -9,7 +10,23 @@ class Node(models.Model):
     type = models.CharField(max_length=76, choices=TYPE_CHOICES)
     node_name = models.CharField(max_length=100, blank=True, null=True)
     
-    
+
+class BaseNode(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    node_name = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class SupplyNode(BaseNode):
+    supply_amount = models.FloatField(default=0)
+
+
+class DemandNode(BaseNode):
+    demand_amount = models.FloatField(default=0)
+
+
 class Arc(models.Model):
     start_node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name='outgoing_arcs')
     end_node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name='incoming_arcs')

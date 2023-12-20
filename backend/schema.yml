@@ -157,6 +157,161 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/demand-nodes/:
+    get:
+      operationId: api_demand_nodes_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DemandNode'
+          description: ''
+    post:
+      operationId: api_demand_nodes_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DemandNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DemandNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandNode'
+          description: ''
+  /api/demand-nodes/{id}/:
+    get:
+      operationId: api_demand_nodes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this demand node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandNode'
+          description: ''
+    put:
+      operationId: api_demand_nodes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this demand node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DemandNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DemandNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandNode'
+          description: ''
+    patch:
+      operationId: api_demand_nodes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this demand node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDemandNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDemandNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDemandNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandNode'
+          description: ''
+    delete:
+      operationId: api_demand_nodes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this demand node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/nodes/:
     get:
       operationId: api_nodes_list
@@ -338,6 +493,161 @@ paths:
               schema:
                 $ref: '#/components/schemas/Network'
           description: ''
+  /api/supply-nodes/:
+    get:
+      operationId: api_supply_nodes_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupplyNode'
+          description: ''
+    post:
+      operationId: api_supply_nodes_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SupplyNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SupplyNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyNode'
+          description: ''
+  /api/supply-nodes/{id}/:
+    get:
+      operationId: api_supply_nodes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supply node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyNode'
+          description: ''
+    put:
+      operationId: api_supply_nodes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supply node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SupplyNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SupplyNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyNode'
+          description: ''
+    patch:
+      operationId: api_supply_nodes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supply node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplyNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplyNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplyNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyNode'
+          description: ''
+    delete:
+      operationId: api_supply_nodes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supply node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
     Arc:
@@ -358,6 +668,22 @@ components:
       - end_node
       - id
       - start_node
+    DemandNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        demand_amount:
+          type: number
+          format: double
+      required:
+      - id
     Network:
       type: object
       properties:
@@ -400,6 +726,20 @@ components:
         cost:
           type: number
           format: double
+    PatchedDemandNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        demand_amount:
+          type: number
+          format: double
     PatchedNode:
       type: object
       properties:
@@ -412,6 +752,36 @@ components:
           type: string
           nullable: true
           maxLength: 100
+    PatchedSupplyNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        supply_amount:
+          type: number
+          format: double
+    SupplyNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        supply_amount:
+          type: number
+          format: double
+      required:
+      - id
     TypeEnum:
       enum:
       - supply
