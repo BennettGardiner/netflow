@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import DemandNode, Node, Arc, SupplyNode
+from .models import DemandNode, Arc, SupplyNode, BaseNode
 
-admin.site.register(Node)
+# Register your models here.
+admin.site.register(BaseNode)
+admin.site.register(SupplyNode)
+admin.site.register(DemandNode)
 admin.site.register(Arc)

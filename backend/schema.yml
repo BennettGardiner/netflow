@@ -160,6 +160,7 @@ paths:
   /api/demand-nodes/:
     get:
       operationId: api_demand_nodes_list
+      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       security:
@@ -177,6 +178,7 @@ paths:
           description: ''
     post:
       operationId: api_demand_nodes_create
+      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       requestBody:
@@ -204,6 +206,7 @@ paths:
   /api/demand-nodes/{id}/:
     get:
       operationId: api_demand_nodes_retrieve
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -227,6 +230,7 @@ paths:
           description: ''
     put:
       operationId: api_demand_nodes_update
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -261,6 +265,7 @@ paths:
           description: ''
     patch:
       operationId: api_demand_nodes_partial_update
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -295,6 +300,7 @@ paths:
           description: ''
     delete:
       operationId: api_demand_nodes_destroy
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -302,159 +308,6 @@ paths:
           type: string
           format: uuid
         description: A UUID string identifying this demand node.
-        required: true
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
-  /api/nodes/:
-    get:
-      operationId: api_nodes_list
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Node'
-          description: ''
-    post:
-      operationId: api_nodes_create
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Node'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Node'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Node'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Node'
-          description: ''
-  /api/nodes/{id}/:
-    get:
-      operationId: api_nodes_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this node.
-        required: true
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Node'
-          description: ''
-    put:
-      operationId: api_nodes_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this node.
-        required: true
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Node'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Node'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Node'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Node'
-          description: ''
-    patch:
-      operationId: api_nodes_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this node.
-        required: true
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedNode'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedNode'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedNode'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Node'
-          description: ''
-    delete:
-      operationId: api_nodes_destroy
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this node.
         required: true
       tags:
       - api
@@ -496,6 +349,7 @@ paths:
   /api/supply-nodes/:
     get:
       operationId: api_supply_nodes_list
+      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       security:
@@ -513,6 +367,7 @@ paths:
           description: ''
     post:
       operationId: api_supply_nodes_create
+      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       requestBody:
@@ -540,6 +395,7 @@ paths:
   /api/supply-nodes/{id}/:
     get:
       operationId: api_supply_nodes_retrieve
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -563,6 +419,7 @@ paths:
           description: ''
     put:
       operationId: api_supply_nodes_update
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -597,6 +454,7 @@ paths:
           description: ''
     patch:
       operationId: api_supply_nodes_partial_update
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -631,6 +489,7 @@ paths:
           description: ''
     delete:
       operationId: api_supply_nodes_destroy
+      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -657,9 +516,11 @@ components:
           type: integer
           readOnly: true
         start_node:
-          type: integer
+          type: string
+          format: uuid
         end_node:
-          type: integer
+          type: string
+          format: uuid
         cost:
           type: number
           format: double
@@ -687,32 +548,22 @@ components:
     Network:
       type: object
       properties:
-        nodes:
+        supply_nodes:
           type: array
           items:
-            $ref: '#/components/schemas/Node'
+            $ref: '#/components/schemas/SupplyNode'
+        demand_nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DemandNode'
         arcs:
           type: array
           items:
             $ref: '#/components/schemas/Arc'
       required:
       - arcs
-      - nodes
-    Node:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        node_name:
-          type: string
-          nullable: true
-          maxLength: 100
-      required:
-      - id
-      - type
+      - demand_nodes
+      - supply_nodes
     PatchedArc:
       type: object
       properties:
@@ -720,9 +571,11 @@ components:
           type: integer
           readOnly: true
         start_node:
-          type: integer
+          type: string
+          format: uuid
         end_node:
-          type: integer
+          type: string
+          format: uuid
         cost:
           type: number
           format: double
@@ -740,18 +593,6 @@ components:
         demand_amount:
           type: number
           format: double
-    PatchedNode:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        node_name:
-          type: string
-          nullable: true
-          maxLength: 100
     PatchedSupplyNode:
       type: object
       properties:
@@ -782,16 +623,6 @@ components:
           format: double
       required:
       - id
-    TypeEnum:
-      enum:
-      - supply
-      - demand
-      - storage
-      type: string
-      description: |-
-        * `supply` - Supply
-        * `demand` - Demand
-        * `storage` - Storage
   securitySchemes:
     basicAuth:
       type: http
