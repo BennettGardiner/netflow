@@ -80,16 +80,13 @@ export default function App() {
 
   const handleEdgeCostSubmission = (cost) => {
     if (newEdgeData) {
-        // Correctly structure the edge data to include the label within the 'data' property
         const edgeWithCost = { 
             ...newEdgeData, 
             data: { label: `Cost: ${cost} \n` }
         };
 
-        // Update edges state
         setEdges((eds) => addEdge(edgeWithCost, eds));
 
-        // Prepare new edge data for POST request
         const newEdgeForPost = {
             start_node: newEdgeData.source,
             end_node: newEdgeData.target,
@@ -127,58 +124,6 @@ export default function App() {
     setIsEdgeCostModalOpen(true);
   }, [setEdges]);
 
-
-/*   const handleSubmit = (nodeInfo, nodeData) => {
-    // Here, we're making a POST request to create a new node,
-    // then adding the new node to our state.
-    const newNodeData = {
-      ...nodeData,
-      type: nodeTypeMapping[nodeData.type], // Use mapped type
-      node_name: nodeInfo.nodeLabel, 
-    };
-    fetch('http://127.0.0.1:8000/api/nodes/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newNodeData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((err) => {
-            throw err; // Throw the error if response is not ok
-          });
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Node created:', data);
-        const newNode = {
-          id: data.id.toString(),
-          type: nodeData ? nodeData.type : '', // Use nodeData if available, otherwise use an empty string
-          position: nodeData ? nodeData.position : null, // Use nodeData if available, otherwise use null
-          data: { label: `${nodeInfo.nodeLabel}` || "" },
-          style: {
-            backgroundColor:
-            newNodeData.type === 'supply'
-              ? 'var(--supply-green)'
-              : newNodeData.type === 'demand'
-              ? 'var(--demand-red)'
-              : newNodeData.type === 'storage'
-              ? 'var(--storage-blue)'
-              : 'var(--default-color)', 
-            color: 'white',
-            fontSize: '22px',
-          },
-        };
-        setNodes((ns) => ns.concat(newNode));
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    setIsModalOpen(false);
-  }; */
-
   const handleSubmit = (nodeInfo, nodeData) => {
     let apiEndpoint;
     let newNodeData = {
@@ -186,11 +131,11 @@ export default function App() {
     };
 
     if (nodeData.type === 'input') {
-        apiEndpoint = 'http://127.0.0.1:8000/api/supply-nodes/';
-        newNodeData['supply_amount'] = parseFloat(nodeInfo.amount); // Add supply amount
+      apiEndpoint = 'http://127.0.0.1:8000/api/supply-nodes/';
+      newNodeData['node_name'] = newNodeData['node_name'] + `: ${parseFloat(nodeInfo.amount)}`; // Replace name with supply amount
     } else if (nodeData.type === 'output') {
         apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
-        newNodeData['demand_amount'] = parseFloat(nodeInfo.amount); // Add demand amount
+        newNodeData['node_name'] =  newNodeData['node_name'] + `: ${parseFloat(nodeInfo.amount)}`; // Replace name with demand amount
     } else {
         console.error('Unsupported node type');
         return;
@@ -218,7 +163,7 @@ export default function App() {
             type: nodeData.type, 
             position: nodeData.position,
             data: { 
-                label: nodeInfo.nodeLabel || "",
+                label: newNodeData.node_name || "",
                 amount: nodeData.type === 'input' || nodeData.type === 'output' ? nodeInfo.amount : undefined,
             },
             style: {
@@ -260,7 +205,6 @@ export default function App() {
           onEdgesChange={onEdgesChange}
           edgeTypes={edgeTypes}
           nodeTypes={nodeTypes}
-          attributionPosition="top-right"
           connectionMode={ConnectionMode.Loose}
           >
             <MiniMap nodeColor={nodeColor} pannable={true}/>
