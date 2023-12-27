@@ -9,40 +9,19 @@ from .engine.solver import solve_network_flow
 from .models import BaseNode, DemandNode, SupplyNode, Arc
 from .serializers import DemandNodeSerializer, ArcSerializer, NetworkSerializer, SupplyNodeSerializer
 
-import uuid
-
 logger = logging.getLogger(__name__)
 
-class BaseNodeViewSet(viewsets.ModelViewSet):
-    """
-    Abstract base viewset for node-like models with UUID validation.
-    """
-    def perform_create(self, serializer):
-        self.validate_uuid(serializer)
 
-    def perform_update(self, serializer):
-        self.validate_uuid(serializer, updating=True)
-
-    def validate_uuid(self, serializer, updating=False):
-        node_id = self.request.data.get('id')
-        if node_id:
-            try:
-                valid_uuid = uuid.UUID(node_id, version=4)
-            except ValueError:
-                raise ValidationError({'id': 'Invalid UUID format.'})
-            if BaseNode.objects.filter(id=valid_uuid).exists() and (not updating or valid_uuid != serializer.instance.id):
-                raise ValidationError({'id': 'UUID already exists.'})
-
-
-class SupplyNodeViewSet(BaseNodeViewSet):
+class SupplyNodeViewSet(viewsets.ModelViewSet):
     queryset = SupplyNode.objects.all()
     serializer_class = SupplyNodeSerializer
 
 
-class DemandNodeViewSet(BaseNodeViewSet):
+class DemandNodeViewSet(viewsets.ModelViewSet):
     queryset = DemandNode.objects.all()
     serializer_class = DemandNodeSerializer
     
+
 class ArcViewSet(viewsets.ModelViewSet):
     queryset = Arc.objects.all()
     serializer_class = ArcSerializer
