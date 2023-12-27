@@ -160,7 +160,6 @@ paths:
   /api/demand-nodes/:
     get:
       operationId: api_demand_nodes_list
-      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       security:
@@ -178,7 +177,6 @@ paths:
           description: ''
     post:
       operationId: api_demand_nodes_create
-      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       requestBody:
@@ -206,7 +204,6 @@ paths:
   /api/demand-nodes/{id}/:
     get:
       operationId: api_demand_nodes_retrieve
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -230,7 +227,6 @@ paths:
           description: ''
     put:
       operationId: api_demand_nodes_update
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -265,7 +261,6 @@ paths:
           description: ''
     patch:
       operationId: api_demand_nodes_partial_update
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -300,7 +295,6 @@ paths:
           description: ''
     delete:
       operationId: api_demand_nodes_destroy
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -349,7 +343,6 @@ paths:
   /api/supply-nodes/:
     get:
       operationId: api_supply_nodes_list
-      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       security:
@@ -367,7 +360,6 @@ paths:
           description: ''
     post:
       operationId: api_supply_nodes_create
-      description: Abstract base viewset for node-like models with UUID validation.
       tags:
       - api
       requestBody:
@@ -395,7 +387,6 @@ paths:
   /api/supply-nodes/{id}/:
     get:
       operationId: api_supply_nodes_retrieve
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -419,7 +410,6 @@ paths:
           description: ''
     put:
       operationId: api_supply_nodes_update
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -454,7 +444,6 @@ paths:
           description: ''
     patch:
       operationId: api_supply_nodes_partial_update
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
@@ -489,7 +478,6 @@ paths:
           description: ''
     delete:
       operationId: api_supply_nodes_destroy
-      description: Abstract base viewset for node-like models with UUID validation.
       parameters:
       - in: path
         name: id
