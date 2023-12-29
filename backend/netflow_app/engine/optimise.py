@@ -54,7 +54,9 @@ def optimise_network(data):
         for arc in arcs:
             flow_val = flow[arc['start_node'], arc['end_node']].varValue
             if flow_val == 1:
-                print(f"Flow from {arc['start_node']} to {arc['end_node']}: {flow_val}")
+                supply_node = [node['node_name'] for node in supply_nodes if node['id'] == arc['start_node']][0]
+                demand_node = [node['node_name'] for node in demand_nodes if node['id'] == arc['end_node']][0]
+                print(f"Flow from {supply_node} to {demand_node}: {flow_val}")
     else:
         print("No optimal solution found.")
 

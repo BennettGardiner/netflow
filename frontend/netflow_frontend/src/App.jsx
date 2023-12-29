@@ -127,60 +127,59 @@ export default function App() {
   const handleSubmit = (nodeInfo, nodeData) => {
     let apiEndpoint;
     let newNodeData = {
-        node_name: nodeInfo.nodeLabel, 
+      node_name: nodeInfo.nodeLabel, // Only the name for backend
     };
-
+  
+    // Determining the endpoint and preparing data for the backend
     if (nodeData.type === 'input') {
       apiEndpoint = 'http://127.0.0.1:8000/api/supply-nodes/';
-      newNodeData['node_name'] = newNodeData['node_name'] + `: ${parseFloat(nodeInfo.amount)}`; // Replace name with supply amount
+      newNodeData['supply_amount'] = parseFloat(nodeInfo.amount); // Add supply amount
     } else if (nodeData.type === 'output') {
-        apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
-        newNodeData['node_name'] =  newNodeData['node_name'] + `: ${parseFloat(nodeInfo.amount)}`; // Replace name with demand amount
+      apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
+      newNodeData['demand_amount'] = parseFloat(nodeInfo.amount); // Add demand amount
     } else {
-        console.error('Unsupported node type');
-        return;
+      console.error('Unsupported node type');
+      return;
     }
-
+  
     fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newNodeData),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newNodeData),
     })
     .then((response) => {
-        if (!response.ok) {
-            return response.json().then((err) => {
-                throw err;
-            });
-        }
-        return response.json();
+      if (!response.ok) {
+        return response.json().then((err) => {
+          throw err;
+        });
+      }
+      return response.json();
     })
     .then((data) => {
-        console.log('Node created:', data);
-        const newNode = {
-            id: data.id.toString(),
-            type: nodeData.type, 
-            position: nodeData.position,
-            data: { 
-                label: newNodeData.node_name || "",
-                amount: nodeData.type === 'input' || nodeData.type === 'output' ? nodeInfo.amount : undefined,
-            },
-            style: {
-                backgroundColor: nodeColor({ type: nodeData.type }),
-                color: 'white',
-                fontSize: '22px',
-            },
-        };
-        setNodes((ns) => ns.concat(newNode));
+      console.log('Node created:', data);
+      const amount = nodeData.type === 'input' ? data.supply_amount : data.demand_amount;
+      const newNode = {
+        id: data.id.toString(),
+        type: nodeData.type,
+        position: nodeData.position,
+        data: { 
+          label: `${nodeInfo.nodeLabel}: ${amount}` // Name and amount for frontend label
+        },
+        style: {
+          backgroundColor: nodeColor({ type: nodeData.type }),
+          color: 'white',
+          fontSize: '22px',
+        },
+      };
+      setNodes((ns) => ns.concat(newNode));
     })
     .catch((error) => {
-        console.error('Error:', error);
+      console.error('Error:', error);
     });
     setIsModalOpen(false);
-};
-
-
+  };
 
   const handleSolveClick = useCallback(async () => {
     try {
