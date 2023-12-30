@@ -6,8 +6,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.exceptions import ValidationError
 
 from .engine.solver import solve_network_flow
-from .models import BaseNode, DemandNode, SupplyNode, Arc
-from .serializers import DemandNodeSerializer, ArcSerializer, NetworkSerializer, SupplyNodeSerializer
+from .models import BaseNode, DemandNode, StorageNode, SupplyNode, Arc
+from .serializers import DemandNodeSerializer, ArcSerializer, NetworkSerializer, StorageNodeSerializer, SupplyNodeSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,11 @@ class SupplyNodeViewSet(viewsets.ModelViewSet):
 class DemandNodeViewSet(viewsets.ModelViewSet):
     queryset = DemandNode.objects.all()
     serializer_class = DemandNodeSerializer
+    
+
+class StorageNodeViewSet(viewsets.ModelViewSet):
+    queryset = StorageNode.objects.all()
+    serializer_class = StorageNodeSerializer
     
 
 class ArcViewSet(viewsets.ModelViewSet):

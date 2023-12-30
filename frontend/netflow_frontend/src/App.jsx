@@ -8,6 +8,7 @@ import ReactFlow, {
   Background,
   addEdge,
   ConnectionMode,
+  Handle,
 } from 'reactflow';
 import axios from 'axios';
 
@@ -23,24 +24,90 @@ import ButtonEdge from './ButtonEdge';
 const initialNodes = [];
 const initialEdges = [];
 
+const minimapNodeColor = (node) => {
+  switch (node.data.type) {
+    case 'supply':
+      return 'green';
+    case 'demand':
+      return 'red';
+    case 'storage':
+      return 'blue';
+    default:
+      return 'gray';
+  }
+};
+
+const nodeColor = (type) => {
+  switch (type) {
+    case 'supply':
+      return 'var(--supply-green)';
+    case 'demand':
+      return 'var(--demand-red)';
+    case 'storage':
+      return 'var(--storage-blue)';
+    default:
+      return 'var(--default-color)';
+  }
+};
+
+const NodeContent = ({ data, type }) => {
+  const horizontalPadding = '10px';
+  const verticalPadding = '25px';
+
+  return (
+    <div style={{ 
+      padding: `${verticalPadding} ${horizontalPadding}`, 
+      border: '1px solid black', 
+      backgroundColor: nodeColor(type), 
+      color: 'white',
+      position: 'relative',
+    }}>
+      {data.label}
+      {data.amount !== undefined && (
+        <div style={{ 
+          position: 'absolute', 
+          bottom: '10px', 
+          right: '10px', 
+          fontSize: '12px' 
+        }}>
+          {data.amount}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+const SupplyNode = ({ data }) => (
+  <div>
+    <Handle type="source" position="right" style={{ borderRadius: 0 }} />
+    <NodeContent data={data} type="supply" />
+  </div>
+);
+
+const DemandNode = ({ data }) => (
+  <div>
+    <Handle type="target" position="left" style={{ borderRadius: 0 }} />
+    <NodeContent data={data} type="demand" /> 
+  </div>
+);
+
+const StorageNode = ({ data }) => (
+  <div>
+    <Handle type="target" position="left" style={{ borderRadius: 0 }} />
+    <NodeContent data={data} type="storage" />
+    <Handle type="source" position="right" style={{ borderRadius: 0 }} />
+  </div>
+);
+
 const nodeTypes = {
+  input: SupplyNode,
+  output: DemandNode,
+  default: StorageNode,
 };
 
 const edgeTypes = {
   buttonedge: ButtonEdge, 
-};
-
-const nodeColor = (node) => {
-  switch (node.type) {
-    case 'input':
-      return 'var(--supply-green)';
-    case 'default':
-      return 'var(--storage-blue)';
-    case 'output':
-      return 'var(--demand-red)';
-    default:
-      return 'var(--default-color)';
-  }
 };
 
 export default function App() {
@@ -129,17 +196,24 @@ export default function App() {
     let newNodeData = {
       node_name: nodeInfo.nodeLabel, // Only the name for backend
     };
-  
-    // Determining the endpoint and preparing data for the backend
-    if (nodeData.type === 'input') {
-      apiEndpoint = 'http://127.0.0.1:8000/api/supply-nodes/';
-      newNodeData['supply_amount'] = parseFloat(nodeInfo.amount); // Add supply amount
-    } else if (nodeData.type === 'output') {
-      apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
-      newNodeData['demand_amount'] = parseFloat(nodeInfo.amount); // Add demand amount
-    } else {
-      console.error('Unsupported node type');
-      return;
+
+    switch (nodeData.type) {
+      case 'input':
+        apiEndpoint = 'http://127.0.0.1:8000/api/supply-nodes/';
+        newNodeData['supply_amount'] = parseFloat(nodeInfo.amount);
+        break;
+      case 'output':
+        apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
+        newNodeData['demand_amount'] = parseFloat(nodeInfo.amount);
+        break;
+      case 'default':
+        // Define how to handle storage node
+        apiEndpoint = 'http://127.0.0.1:8000/api/storage-nodes/';
+        // Add additional properties as needed
+        break;
+      default:
+        console.error('Unsupported node type');
+        return;
     }
   
     fetch(apiEndpoint, {
@@ -160,13 +234,30 @@ export default function App() {
     .then((data) => {
       console.log('Node created:', data);
       const amount = nodeData.type === 'input' ? data.supply_amount : data.demand_amount;
+      let newNodeType;
+        switch (nodeData.type) {
+          case 'input':
+            newNodeType = 'supply';
+            break;
+          case 'output':
+            newNodeType = 'demand';
+            break;
+          case 'default':
+            newNodeType = 'storage';
+            break;
+          default:
+            console.error('Unsupported node type:', nodeData.type);
+            return;
+        }
       const newNode = {
         id: data.id.toString(),
         type: nodeData.type,
-        position: nodeData.position,
         data: { 
-          label: `${nodeInfo.nodeLabel}: ${amount}` // Name and amount for frontend label
+          label: nodeInfo.nodeLabel,
+          amount: amount,
+          type: newNodeType // Add this to use in NodeContent for color
         },
+        position: nodeData.position,
         style: {
           backgroundColor: nodeColor({ type: nodeData.type }),
           color: 'white',
@@ -206,7 +297,7 @@ export default function App() {
           nodeTypes={nodeTypes}
           connectionMode={ConnectionMode.Loose}
           >
-            <MiniMap nodeColor={nodeColor} pannable={true}/>
+            <MiniMap nodeColor={minimapNodeColor} pannable={true}/>
             <Controls />
             <Background color="#aaa" gap={16} />
           </ReactFlow>
