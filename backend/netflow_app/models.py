@@ -14,6 +14,11 @@ class DemandNode(BaseNode):
     demand_amount = models.FloatField(default=0)
 
 
+class StorageNode(BaseNode):
+    capacity = models.FloatField(default=0)
+    initial_amount = models.FloatField(default=0)
+
+
 class Arc(models.Model):
     start_node = models.ForeignKey(BaseNode, on_delete=models.CASCADE, related_name='outgoing_arcs')
     end_node = models.ForeignKey(BaseNode, on_delete=models.CASCADE, related_name='incoming_arcs')

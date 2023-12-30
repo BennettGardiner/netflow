@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Arc, DemandNode, SupplyNode
+from .models import Arc, DemandNode, StorageNode, SupplyNode
 
 
 class SupplyNodeSerializer(serializers.ModelSerializer):
@@ -12,6 +12,12 @@ class DemandNodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DemandNode
         fields = ['id', 'node_name', 'demand_amount']
+
+
+class StorageNodeSerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = StorageNode
+        fields = ['id', 'node_name', 'capacity', 'initial_amount']
 
 
 class ArcSerializer(serializers.ModelSerializer):

@@ -340,6 +340,161 @@ paths:
               schema:
                 $ref: '#/components/schemas/Network'
           description: ''
+  /api/storage-nodes/:
+    get:
+      operationId: api_storage_nodes_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageNode'
+          description: ''
+    post:
+      operationId: api_storage_nodes_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StorageNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StorageNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageNode'
+          description: ''
+  /api/storage-nodes/{id}/:
+    get:
+      operationId: api_storage_nodes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this storage node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageNode'
+          description: ''
+    put:
+      operationId: api_storage_nodes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this storage node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StorageNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StorageNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageNode'
+          description: ''
+    patch:
+      operationId: api_storage_nodes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this storage node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStorageNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStorageNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStorageNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageNode'
+          description: ''
+    delete:
+      operationId: api_storage_nodes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this storage node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/supply-nodes/:
     get:
       operationId: api_supply_nodes_list
@@ -581,6 +736,23 @@ components:
         demand_amount:
           type: number
           format: double
+    PatchedStorageNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        capacity:
+          type: number
+          format: double
+        initial_amount:
+          type: number
+          format: double
     PatchedSupplyNode:
       type: object
       properties:
@@ -595,6 +767,25 @@ components:
         supply_amount:
           type: number
           format: double
+    StorageNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        node_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        capacity:
+          type: number
+          format: double
+        initial_amount:
+          type: number
+          format: double
+      required:
+      - id
     SupplyNode:
       type: object
       properties:
