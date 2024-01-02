@@ -1,4 +1,5 @@
 import logging
+import pulp as pl
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -6,8 +7,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.exceptions import ValidationError
 
 from .engine.solver import solve_network_flow
-from .models import BaseNode, DemandNode, StorageNode, SupplyNode, Arc
-from .serializers import DemandNodeSerializer, ArcSerializer, NetworkSerializer, StorageNodeSerializer, SupplyNodeSerializer
+from .models import BaseNode, DemandNode, Solution, StorageNode, SupplyNode, Arc
+from .serializers import DemandNodeSerializer, ArcSerializer, NetworkSerializer, SolutionSerializer, StorageNodeSerializer, SupplyNodeSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -32,30 +33,36 @@ class ArcViewSet(viewsets.ModelViewSet):
     serializer_class = ArcSerializer
 
     def perform_create(self, serializer):
-        start_node_id = self.request.data.get('start_node')
-        end_node_id = self.request.data.get('end_node')
+        start_node_name = self.request.data.get('start_node')
+        end_node_name = self.request.data.get('end_node')
         cost = self.request.data.get('cost')
 
-        start_node = get_object_or_404(BaseNode, id=start_node_id)
-        end_node = get_object_or_404(BaseNode, id=end_node_id)
+        start_node = get_object_or_404(BaseNode, node_name=start_node_name)
+        end_node = get_object_or_404(BaseNode, node_name=end_node_name)
 
         serializer.save(start_node=start_node, end_node=end_node, cost=cost)
 
     def perform_update(self, serializer):
-        start_node_id = self.request.data.get('start_node')
-        end_node_id = self.request.data.get('end_node')
+        start_node_name = self.request.data.get('start_node')
+        end_node_name = self.request.data.get('end_node')
         cost = self.request.data.get('cost')
 
-        if start_node_id:
-            start_node = get_object_or_404(BaseNode, id=start_node_id)
+        if start_node_name:
+            start_node = get_object_or_404(BaseNode, node_name=start_node_name)
             serializer.instance.start_node = start_node
-        if end_node_id:
-            end_node = get_object_or_404(BaseNode, id=end_node_id)
+        if end_node_name:
+            end_node = get_object_or_404(BaseNode, node_name=end_node_name)
             serializer.instance.end_node = end_node
         if cost is not None:
             serializer.instance.cost = cost
 
         serializer.save()
+
+
+class SolutionViewSet(viewsets.ModelViewSet):
+    queryset = Solution.objects.all()
+    serializer_class = SolutionSerializer
+
         
 class SolveView(GenericAPIView):
     serializer_class = NetworkSerializer
@@ -68,6 +75,13 @@ class SolveView(GenericAPIView):
         network_serializer = NetworkSerializer({"supply_nodes": supply_nodes, "demand_nodes": demand_nodes, "arcs": arcs})
         serialized_data = network_serializer.data
 
-        solve_network_flow(serialized_data)
+        total_cost, arc_flows = solve_network_flow(serialized_data)
+        
+        # create a Solution model instance with the arcs in utilised_arcs
+        solution = Solution.objects.create(
+            total_cost=total_cost
+        )
+        solution.arc_flows = arc_flows
+        solution.save()    
 
         return Response({"status": "success", "message": "Problem solved"}, status=status.HTTP_200_OK)

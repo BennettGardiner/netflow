@@ -1,23 +1,23 @@
 from rest_framework import serializers
-from .models import Arc, DemandNode, StorageNode, SupplyNode
+from .models import Arc, DemandNode, Solution, StorageNode, SupplyNode
 
 
 class SupplyNodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupplyNode
-        fields = ['id', 'node_name', 'supply_amount']
+        fields = ['node_name', 'supply_amount']
 
 
 class DemandNodeSerializer(serializers.ModelSerializer):    
     class Meta:
         model = DemandNode
-        fields = ['id', 'node_name', 'demand_amount']
+        fields = ['node_name', 'demand_amount']
 
 
 class StorageNodeSerializer(serializers.ModelSerializer):    
     class Meta:
         model = StorageNode
-        fields = ['id', 'node_name', 'capacity', 'initial_amount']
+        fields = ['node_name', 'capacity', 'initial_amount']
 
 
 class ArcSerializer(serializers.ModelSerializer):
@@ -42,3 +42,30 @@ class NetworkSerializer(serializers.Serializer):
         arcs = [Arc.objects.create(**arc_data) for arc_data in arcs_data]
 
         return {"supply_nodes": supply_nodes, "demand_nodes": demand_nodes, "arcs": arcs}
+
+
+class SolutionSerializer(serializers.ModelSerializer):
+    arcs = ArcSerializer(many=True, read_only=True)
+    arc_flows = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Solution
+        fields = ['id', 'created_at', 'total_cost', 'arcs', 'arc_flows']
+
+    def get_arc_flows(self, obj):
+        """Serializes the arc_flows data."""
+        if obj.arc_flows is None:
+            return {} 
+
+        arc_flows_data = {}
+        for arc_id, flow_amount in obj.arc_flows.items():
+            arc_instance = Arc.objects.get(id=arc_id)
+            arc_data = ArcSerializer(arc_instance).data
+            arc_flows_data[arc_id] = {
+                'arc': arc_data,
+                'flow': flow_amount
+            }
+
+        return arc_flows_data
+
+

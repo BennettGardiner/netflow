@@ -190,6 +190,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/DemandNode'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -201,16 +202,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/DemandNode'
           description: ''
-  /api/demand-nodes/{id}/:
+  /api/demand-nodes/{node_name}/:
     get:
       operationId: api_demand_nodes_retrieve
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this demand node.
+        description: A unique value identifying this demand node.
         required: true
       tags:
       - api
@@ -229,11 +229,10 @@ paths:
       operationId: api_demand_nodes_update
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this demand node.
+        description: A unique value identifying this demand node.
         required: true
       tags:
       - api
@@ -248,6 +247,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/DemandNode'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -263,11 +263,10 @@ paths:
       operationId: api_demand_nodes_partial_update
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this demand node.
+        description: A unique value identifying this demand node.
         required: true
       tags:
       - api
@@ -297,11 +296,163 @@ paths:
       operationId: api_demand_nodes_destroy
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this demand node.
+        description: A unique value identifying this demand node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/solutions/:
+    get:
+      operationId: api_solutions_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Solution'
+          description: ''
+    post:
+      operationId: api_solutions_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Solution'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Solution'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Solution'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+          description: ''
+  /api/solutions/{id}/:
+    get:
+      operationId: api_solutions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this solution.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+          description: ''
+    put:
+      operationId: api_solutions_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this solution.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Solution'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Solution'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Solution'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+          description: ''
+    patch:
+      operationId: api_solutions_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this solution.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSolution'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSolution'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSolution'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+          description: ''
+    delete:
+      operationId: api_solutions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this solution.
         required: true
       tags:
       - api
@@ -373,6 +524,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/StorageNode'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -384,16 +536,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/StorageNode'
           description: ''
-  /api/storage-nodes/{id}/:
+  /api/storage-nodes/{node_name}/:
     get:
       operationId: api_storage_nodes_retrieve
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this storage node.
+        description: A unique value identifying this storage node.
         required: true
       tags:
       - api
@@ -412,11 +563,10 @@ paths:
       operationId: api_storage_nodes_update
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this storage node.
+        description: A unique value identifying this storage node.
         required: true
       tags:
       - api
@@ -431,6 +581,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/StorageNode'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -446,11 +597,10 @@ paths:
       operationId: api_storage_nodes_partial_update
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this storage node.
+        description: A unique value identifying this storage node.
         required: true
       tags:
       - api
@@ -480,11 +630,10 @@ paths:
       operationId: api_storage_nodes_destroy
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this storage node.
+        description: A unique value identifying this storage node.
         required: true
       tags:
       - api
@@ -528,6 +677,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/SupplyNode'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -539,16 +689,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/SupplyNode'
           description: ''
-  /api/supply-nodes/{id}/:
+  /api/supply-nodes/{node_name}/:
     get:
       operationId: api_supply_nodes_retrieve
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this supply node.
+        description: A unique value identifying this supply node.
         required: true
       tags:
       - api
@@ -567,11 +716,10 @@ paths:
       operationId: api_supply_nodes_update
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this supply node.
+        description: A unique value identifying this supply node.
         required: true
       tags:
       - api
@@ -586,6 +734,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/SupplyNode'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -601,11 +750,10 @@ paths:
       operationId: api_supply_nodes_partial_update
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this supply node.
+        description: A unique value identifying this supply node.
         required: true
       tags:
       - api
@@ -635,11 +783,10 @@ paths:
       operationId: api_supply_nodes_destroy
       parameters:
       - in: path
-        name: id
+        name: node_name
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this supply node.
+        description: A unique value identifying this supply node.
         required: true
       tags:
       - api
@@ -660,10 +807,8 @@ components:
           readOnly: true
         start_node:
           type: string
-          format: uuid
         end_node:
           type: string
-          format: uuid
         cost:
           type: number
           format: double
@@ -675,19 +820,14 @@ components:
     DemandNode:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
         node_name:
           type: string
-          nullable: true
           maxLength: 100
         demand_amount:
           type: number
           format: double
       required:
-      - id
+      - node_name
     Network:
       type: object
       properties:
@@ -715,37 +855,46 @@ components:
           readOnly: true
         start_node:
           type: string
-          format: uuid
         end_node:
           type: string
-          format: uuid
         cost:
           type: number
           format: double
     PatchedDemandNode:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
         node_name:
           type: string
-          nullable: true
           maxLength: 100
         demand_amount:
           type: number
           format: double
-    PatchedStorageNode:
+    PatchedSolution:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
+          type: integer
           readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        total_cost:
+          type: number
+          format: double
+        arcs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Arc'
+          readOnly: true
+        arc_flows:
+          type: string
+          readOnly: true
+    PatchedStorageNode:
+      type: object
+      properties:
         node_name:
           type: string
-          nullable: true
           maxLength: 100
         capacity:
           type: number
@@ -756,27 +905,44 @@ components:
     PatchedSupplyNode:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
         node_name:
           type: string
-          nullable: true
           maxLength: 100
         supply_amount:
           type: number
           format: double
-    StorageNode:
+    Solution:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
+          type: integer
           readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        total_cost:
+          type: number
+          format: double
+        arcs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Arc'
+          readOnly: true
+        arc_flows:
+          type: string
+          readOnly: true
+      required:
+      - arc_flows
+      - arcs
+      - created_at
+      - id
+      - total_cost
+    StorageNode:
+      type: object
+      properties:
         node_name:
           type: string
-          nullable: true
           maxLength: 100
         capacity:
           type: number
@@ -785,23 +951,18 @@ components:
           type: number
           format: double
       required:
-      - id
+      - node_name
     SupplyNode:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
         node_name:
           type: string
-          nullable: true
           maxLength: 100
         supply_amount:
           type: number
           format: double
       required:
-      - id
+      - node_name
   securitySchemes:
     basicAuth:
       type: http

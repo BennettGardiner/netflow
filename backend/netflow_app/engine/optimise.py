@@ -1,4 +1,7 @@
+from django.utils import timezone
 import pulp as pl
+
+from netflow_app.models import Solution
 
 def optimise_network(data):
     print("Optimising network using data")
@@ -18,30 +21,28 @@ def optimise_network(data):
 
     # Decision variables for flow on each arc
     flow = {}
-    for supply in supply_nodes:
-        for demand in demand_nodes:
-            flow[supply['id'], demand['id']] = pl.LpVariable(f'flow_{supply["id"]}_{demand["id"]}', lowBound=0, cat='Continuous')
-
+    for arc in arcs:
+        start_node = arc['start_node']
+        end_node = arc['end_node']
+        flow[start_node, end_node] = pl.LpVariable(f'flow_{start_node}_{end_node}', lowBound=0, cat='Continuous')
+        
     # Supply constraints
     for supply in supply_nodes:
         model += (
-            pl.lpSum(flow[supply['id'], demand['id']] for demand in demand_nodes) <= supply['supply_amount'], 
-            f"SupplyConstraint_{supply['id']}"
+            pl.lpSum(flow[supply['node_name'], arc['end_node']] for arc in arcs if arc['start_node'] == supply['node_name']) <= supply['supply_amount'], 
+            f"SupplyConstraint_{supply['node_name']}"
         )
 
     # Demand constraints
     for demand in demand_nodes:
         model += (
-            pl.lpSum(flow[supply['id'], demand['id']] for supply in supply_nodes) == demand['demand_amount'], 
-            f"DemandConstraint_{demand}"
+            pl.lpSum(flow[arc['start_node'], demand['node_name']] for arc in arcs if arc['end_node'] == demand['node_name']) == demand['demand_amount'], 
+            f"DemandConstraint_{demand['node_name']}"
         )
-
-    # todo: implement a real node balance equilibrium constraint
 
     # Objective function: Minimize total cost
     total_cost = pl.lpSum(
-        arc['cost'] * flow[arc['start_node'], arc['end_node']]  
-        for arc in arcs
+        arc['cost'] * flow[arc['start_node'], arc['end_node']] for arc in arcs
     )
     model += total_cost
 
@@ -49,15 +50,17 @@ def optimise_network(data):
     model.solve()
 
     # Print the results
+    arc_flows = {}
     if pl.LpStatus[model.status] == 'Optimal':
         print("Optimal value:", pl.value(model.objective))
         for arc in arcs:
             flow_val = flow[arc['start_node'], arc['end_node']].varValue
-            if flow_val == 1:
-                supply_node = [node['node_name'] for node in supply_nodes if node['id'] == arc['start_node']][0]
-                demand_node = [node['node_name'] for node in demand_nodes if node['id'] == arc['end_node']][0]
+            if flow_val != 0:
+                arc_flows[arc['id']] = flow_val
+                supply_node = [node['node_name'] for node in supply_nodes if node['node_name'] == arc['start_node']][0]
+                demand_node = [node['node_name'] for node in demand_nodes if node['node_name'] == arc['end_node']][0]
                 print(f"Flow from {supply_node} to {demand_node}: {flow_val}")
     else:
         print("No optimal solution found.")
 
-    return model.objective
+    return pl.value(model.objective), arc_flows

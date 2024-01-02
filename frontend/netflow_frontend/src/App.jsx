@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -111,7 +111,7 @@ const edgeTypes = {
 };
 
 export default function App() {
-  
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -153,7 +153,7 @@ export default function App() {
         };
 
         setEdges((eds) => addEdge(edgeWithCost, eds));
-
+        console.log('Edge created from', newEdgeData.source, 'to', newEdgeData.target, 'with cost', cost);
         const newEdgeForPost = {
             start_node: newEdgeData.source,
             end_node: newEdgeData.target,
@@ -250,7 +250,7 @@ export default function App() {
             return;
         }
       const newNode = {
-        id: data.id.toString(),
+        id: nodeInfo.nodeLabel,
         type: nodeData.type,
         data: { 
           label: nodeInfo.nodeLabel,
@@ -272,9 +272,61 @@ export default function App() {
     setIsModalOpen(false);
   };
 
+  // Add this state to track if solution details should be displayed
+  const [showSolutionDetails, setShowSolutionDetails] = useState(false);
+
+  const [latestSolution, setLatestSolution] = useState(null);
+
+  const fetchLatestSolution = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/solutions/');
+      const solutions = response.data;
+      if (solutions.length > 0) {
+        const latestSolution = solutions[solutions.length - 1]; // Get the last solution
+        setLatestSolution(latestSolution);
+      }
+    } catch (error) {
+      console.error('Error fetching solutions:', error);
+    }
+  };
+  
+  const [edgesUpdated, setEdgesUpdated] = useState(false);
+  useEffect(() => {
+    if (latestSolution && latestSolution.arc_flows) {
+      const updatedEdges = edges.map(edge => {
+        // Check if the edge is part of the latest solution using arc_flows
+        const isPartOfSolution = Object.values(latestSolution.arc_flows).some(arcFlow => 
+          arcFlow.arc.start_node === edge.source && arcFlow.arc.end_node === edge.target
+        );
+  
+        if (isPartOfSolution) {
+          // Update the style for highlighting
+          return { ...edge, style: { stroke: 'green', strokeWidth: 6, zlevel: 100 } };
+        } else {
+          // Reset style for non-solution edges
+          return { ...edge, style: { stroke: 'black', strokeWidth: 2 } };
+        }
+      });
+  
+      // Update the edges state with the new array
+      setEdges(updatedEdges);
+    }
+  }, [latestSolution, edges]);  
+  
+  // Reset edgesUpdated when latestSolution changes
+  useEffect(() => {
+    setEdgesUpdated(true);
+  }, [latestSolution]);
+
+  const handleShowSolutionDetails = () => {
+    setShowSolutionDetails(!showSolutionDetails);
+  };
+  
+  
   const handleSolveClick = useCallback(async () => {
     try {
       await axios.post('http://127.0.0.1:8000/api/solve/');
+      await fetchLatestSolution(); // Fetch the latest solution after solving
     } catch (error) {
       console.error('An error occurred while sending data to the engine:', error);
     }
@@ -309,6 +361,33 @@ export default function App() {
           nodeData={nodeData}
         />
       </div>
+      <button 
+        onClick={handleShowSolutionDetails}
+        style={{ 
+          fontSize: 18,
+          fontWeight: 'bold', 
+          whiteSpace: 'pre-line' // This will allow for line breaks
+        }}
+      >
+        {showSolutionDetails ? 'Hide\nSolution\nDetails' : 'Show\nSolution\nDetails'}
+      </button>
+
+    {showSolutionDetails && latestSolution && (
+      <div>
+        <h3>Solution Details:</h3>
+        <p>Total Cost: {latestSolution.total_cost}</p>
+        <p>Utilized Arcs:</p>
+        <ul>
+          {Object.entries(latestSolution.arc_flows).map(([arcId, arcData]) => (
+            <li key={arcId}>
+              Arc {arcId}: Flow of {arcData.flow} from Node {arcData.arc.start_node} to Node {arcData.arc.end_node}, Cost: {arcData.arc.cost} x {arcData.flow} = {arcData.arc.cost * arcData.flow}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+
       {isEdgeCostModalOpen && (
             <EdgeCostModal 
                 isOpen={isEdgeCostModalOpen}
