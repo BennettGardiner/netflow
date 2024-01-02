@@ -21,7 +21,7 @@ from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView
 
-from netflow_app.views import DemandNodeViewSet, ArcViewSet, SolveView, StorageNodeViewSet, SupplyNodeViewSet
+from netflow_app.views import DemandNodeViewSet, ArcViewSet, SolutionViewSet, SolveView, StorageNodeViewSet, SupplyNodeViewSet
 
 router = DefaultRouter()
 router.register("api/supply-nodes", SupplyNodeViewSet)
@@ -32,13 +32,12 @@ router.register(
     ArcViewSet,
     basename="api/arcs",
 )
+router.register("api/solutions", SolutionViewSet, basename="api/solutions")
 urlpatterns = [re_path("", include(router.urls))]
 urlpatterns += [
     path("admin/", admin.site.urls),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/solve/', SolveView.as_view(), name='solve'),
-    # Swagger UI:
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    # Redoc UI:
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
