@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from .models import Arc, DemandNode, Solution, StorageNode, SupplyNode
+from .models import Arc, BaseNode, DemandNode, Solution, StorageNode, SupplyNode
+
+class BaseNodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseNode
+        fields = ['node_name']
 
 
 class SupplyNodeSerializer(serializers.ModelSerializer):

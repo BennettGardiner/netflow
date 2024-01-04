@@ -157,6 +157,159 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/base-nodes/:
+    get:
+      operationId: api_base_nodes_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BaseNode'
+          description: ''
+    post:
+      operationId: api_base_nodes_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BaseNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BaseNode'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseNode'
+          description: ''
+  /api/base-nodes/{node_name}/:
+    get:
+      operationId: api_base_nodes_retrieve
+      parameters:
+      - in: path
+        name: node_name
+        schema:
+          type: string
+        description: A unique value identifying this base node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseNode'
+          description: ''
+    put:
+      operationId: api_base_nodes_update
+      parameters:
+      - in: path
+        name: node_name
+        schema:
+          type: string
+        description: A unique value identifying this base node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BaseNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BaseNode'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseNode'
+          description: ''
+    patch:
+      operationId: api_base_nodes_partial_update
+      parameters:
+      - in: path
+        name: node_name
+        schema:
+          type: string
+        description: A unique value identifying this base node.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBaseNode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBaseNode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBaseNode'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseNode'
+          description: ''
+    delete:
+      operationId: api_base_nodes_destroy
+      parameters:
+      - in: path
+        name: node_name
+        schema:
+          type: string
+        description: A unique value identifying this base node.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/demand-nodes/:
     get:
       operationId: api_demand_nodes_list
@@ -820,6 +973,14 @@ components:
       - end_node
       - id
       - start_node
+    BaseNode:
+      type: object
+      properties:
+        node_name:
+          type: string
+          maxLength: 100
+      required:
+      - node_name
     DemandNode:
       type: object
       properties:
@@ -867,6 +1028,12 @@ components:
           type: number
           format: double
           nullable: true
+    PatchedBaseNode:
+      type: object
+      properties:
+        node_name:
+          type: string
+          maxLength: 100
     PatchedDemandNode:
       type: object
       properties:
