@@ -1,7 +1,8 @@
-import React, { useState } from 'react'; // Ensure useState is imported
+import React, { useState } from 'react'; 
 
 const EdgeCostModal = ({ isOpen, onRequestClose, onSubmit }) => {
     const [cost, setCost] = useState('');
+    const [capacity, setCapacity] = useState('');
 
     if (!isOpen) return null;
 
@@ -14,11 +15,23 @@ const EdgeCostModal = ({ isOpen, onRequestClose, onSubmit }) => {
                     type="number"
                     value={cost}
                     onChange={(e) => setCost(e.target.value)}
-                    placeholder="Enter cost"
+                    placeholder="Enter cost per unit"
                     style={customStyles.input}
                 />
-                <button onClick={() => onSubmit(cost)} style={customStyles.button}>Submit</button>
-                <button onClick={onRequestClose} style={customStyles.button}>Cancel</button>
+
+                <h2>Set Edge Capacity</h2> 
+                <input
+                    type="number"
+                    value={capacity}
+                    onChange={(e) => setCapacity(e.target.value)}
+                    placeholder="Enter capacity"
+                    style={customStyles.input}
+                />
+
+                <div>
+                    <button onClick={() => onSubmit(cost, capacity)} style={customStyles.button}>Submit</button> {/* Pass capacity to onSubmit */}
+                    <button onClick={onRequestClose} style={customStyles.button}>Cancel</button>
+                </div>
             </div>
         </div>
     );

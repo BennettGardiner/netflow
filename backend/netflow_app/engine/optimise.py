@@ -10,12 +10,6 @@ def optimise_network(data):
     demand_nodes = data['demand_nodes']
     arcs = data['arcs']
 
-    # Handling the UUIDs as strings
-    # todo: Put this on the viewset / serializer as appropriate
-    for arc in arcs:
-        arc['start_node'] = str(arc['start_node'])
-        arc['end_node'] = str(arc['end_node'])
-
     # Initialize the model
     model = pl.LpProblem("NetworkOptimization", pl.LpMinimize)
 
@@ -39,6 +33,14 @@ def optimise_network(data):
             pl.lpSum(flow[arc['start_node'], demand['node_name']] for arc in arcs if arc['end_node'] == demand['node_name']) == demand['demand_amount'], 
             f"DemandConstraint_{demand['node_name']}"
         )
+
+    # Arc capacity constraints
+    for arc in arcs:
+        if arc['capacity'] is not None:
+            model += (
+                flow[arc['start_node'], arc['end_node']] <= arc['capacity'], 
+                f"CapacityConstraint_{arc['start_node']}_{arc['end_node']}"
+            )
 
     # Objective function: Minimize total cost
     total_cost = pl.lpSum(

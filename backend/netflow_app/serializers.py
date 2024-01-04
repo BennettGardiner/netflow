@@ -23,7 +23,7 @@ class StorageNodeSerializer(serializers.ModelSerializer):
 class ArcSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arc
-        fields = ['id', 'start_node', 'end_node', 'cost']
+        fields = ['id', 'start_node', 'end_node', 'cost', 'capacity']
     
 
 class NetworkSerializer(serializers.Serializer):
@@ -53,18 +53,18 @@ class SolutionSerializer(serializers.ModelSerializer):
         fields = ['id', 'created_at', 'total_cost', 'arcs', 'arc_flows']
 
     def get_arc_flows(self, obj):
-        """Serializes the arc_flows data."""
         if obj.arc_flows is None:
-            return {} 
+            return {}
 
         arc_flows_data = {}
         for arc_id, flow_amount in obj.arc_flows.items():
-            arc_instance = Arc.objects.get(id=arc_id)
-            arc_data = ArcSerializer(arc_instance).data
-            arc_flows_data[arc_id] = {
-                'arc': arc_data,
-                'flow': flow_amount
-            }
+            arc_instance = Arc.objects.filter(id=arc_id).first()
+            if arc_instance:
+                arc_data = ArcSerializer(arc_instance).data
+                arc_flows_data[arc_id] = {
+                    'arc': arc_data,
+                    'flow': flow_amount
+                }
 
         return arc_flows_data
 
