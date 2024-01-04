@@ -812,8 +812,11 @@ components:
         cost:
           type: number
           format: double
+        capacity:
+          type: number
+          format: double
+          nullable: true
       required:
-      - cost
       - end_node
       - id
       - start_node
@@ -860,6 +863,10 @@ components:
         cost:
           type: number
           format: double
+        capacity:
+          type: number
+          format: double
+          nullable: true
     PatchedDemandNode:
       type: object
       properties:

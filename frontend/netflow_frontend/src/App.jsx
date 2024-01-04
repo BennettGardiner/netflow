@@ -12,7 +12,7 @@ import ReactFlow, {
 } from 'reactflow';
 import axios from 'axios';
 
-import EdgeCostModal from './EdgeCostModal';
+import EdgeModal from './EdgeModal';
 import Sidebar from './Sidebar';
 import NodeForm from './NodeForm';
 import './dark_theme.css';
@@ -145,19 +145,20 @@ export default function App() {
   const [isEdgeCostModalOpen, setIsEdgeCostModalOpen] = useState(false);
   const [newEdgeData, setNewEdgeData] = useState(null); // To temporarily store new edge data
 
-  const handleEdgeCostSubmission = (cost) => {
+  const handleEdgeSubmission = (cost, capacity) => {
     if (newEdgeData) {
         const edgeWithCost = { 
             ...newEdgeData, 
-            data: { label: `Cost: ${cost} \n` }
+            data: { label: `${cost ? `Cost: ${cost}` : ''}${capacity ? `  Capacity: ${capacity}` : ''}` }
         };
 
         setEdges((eds) => addEdge(edgeWithCost, eds));
-        console.log('Edge created from', newEdgeData.source, 'to', newEdgeData.target, 'with cost', cost);
+        console.log('Edge created from', newEdgeData.source, 'to', newEdgeData.target, 'with cost', cost, 'and capacity', capacity);
         const newEdgeForPost = {
             start_node: newEdgeData.source,
             end_node: newEdgeData.target,
-            cost: parseFloat(cost)
+            cost: cost ? parseFloat(cost) : 0,
+            capacity: parseFloat(capacity)
         };
 
         // Make a POST request to backend with the edge data including cost
@@ -170,7 +171,7 @@ export default function App() {
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log('Arc created with cost:', data);
+            console.log('Arc created with cost:', data.cost, 'and capacity:', data.capacity);
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -389,12 +390,12 @@ export default function App() {
 
 
       {isEdgeCostModalOpen && (
-            <EdgeCostModal 
+            <EdgeModal 
                 isOpen={isEdgeCostModalOpen}
                 onRequestClose={() => setIsEdgeCostModalOpen(false)}
-                onSubmit={(cost) => {
+                onSubmit={(cost, capacity) => {
                     setIsEdgeCostModalOpen(false);
-                    handleEdgeCostSubmission(cost);
+                    handleEdgeSubmission(cost, capacity);
                 }}
             />
         )}

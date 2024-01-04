@@ -36,6 +36,7 @@ class ArcViewSet(viewsets.ModelViewSet):
         start_node_name = self.request.data.get('start_node')
         end_node_name = self.request.data.get('end_node')
         cost = self.request.data.get('cost')
+        capacity = self.request.data.get('capacity')
 
         start_node = get_object_or_404(BaseNode, node_name=start_node_name)
         end_node = get_object_or_404(BaseNode, node_name=end_node_name)
@@ -46,6 +47,7 @@ class ArcViewSet(viewsets.ModelViewSet):
         start_node_name = self.request.data.get('start_node')
         end_node_name = self.request.data.get('end_node')
         cost = self.request.data.get('cost')
+        capacity = self.request.data.get('capacity')
 
         if start_node_name:
             start_node = get_object_or_404(BaseNode, node_name=start_node_name)
