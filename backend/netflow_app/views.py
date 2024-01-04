@@ -8,9 +8,13 @@ from rest_framework.exceptions import ValidationError
 
 from .engine.solver import solve_network_flow
 from .models import BaseNode, DemandNode, Solution, StorageNode, SupplyNode, Arc
-from .serializers import DemandNodeSerializer, ArcSerializer, NetworkSerializer, SolutionSerializer, StorageNodeSerializer, SupplyNodeSerializer
+from .serializers import BaseNodeSerializer, DemandNodeSerializer, ArcSerializer, NetworkSerializer, SolutionSerializer, StorageNodeSerializer, SupplyNodeSerializer
 
 logger = logging.getLogger(__name__)
+
+class BaseNodeViewSet(viewsets.ModelViewSet):
+    queryset = BaseNode.objects.all()
+    serializer_class = BaseNodeSerializer
 
 
 class SupplyNodeViewSet(viewsets.ModelViewSet):
