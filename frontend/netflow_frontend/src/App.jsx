@@ -23,6 +23,8 @@ import 'reactflow/dist/style.css';
 
 import ButtonEdge from './ButtonEdge';
 
+const MAX_ZOOM_LEVEL = 8;
+
 const initialNodes = [];
 const initialEdges = [];
 
@@ -193,7 +195,6 @@ export default function App() {
   }, [handleKeyDown]);
 
 
-  
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -223,12 +224,15 @@ export default function App() {
 
   const handleEdgeSubmission = (cost, capacity) => {
     if (newEdgeData) {
-        const edgeWithCost = { 
+        const edgeWithCostAndCapacity = { 
             ...newEdgeData, 
-            data: { label: `${cost ? `Cost: ${cost}` : ''}${capacity ? `  Capacity: ${capacity}` : ''}` }
+            data: { 
+                cost: cost ? parseFloat(cost) : 0,
+                capacity: capacity ? parseFloat(capacity) : undefined
+            }
         };
 
-        setEdges((eds) => addEdge(edgeWithCost, eds));
+        setEdges((eds) => addEdge(edgeWithCostAndCapacity, eds));
 
         console.log('Edge created from', newEdgeData.source, 'to', newEdgeData.target, 'with cost', cost, 'and capacity', capacity);
         const newEdgeForPost = {
@@ -250,7 +254,7 @@ export default function App() {
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log('Arc', edgeWithCost, 'created with cost:', data.cost, 'and capacity:', data.capacity);
+            console.log('Arc', edgeWithCostAndCapacity, 'created with cost:', data.cost, 'and capacity:', data.capacity);
             setArcIdMap((prevMap) => ({ ...prevMap, [frontendEdgeId]: data.id  }));
         })
         .catch((error) => {
@@ -427,6 +431,7 @@ export default function App() {
           edgeTypes={edgeTypes}
           nodeTypes={nodeTypes}
           connectionMode={ConnectionMode.Loose}
+          maxZoom={MAX_ZOOM_LEVEL}
           >
             <MiniMap nodeColor={minimapNodeColor} pannable={true}/>
             <Controls />
