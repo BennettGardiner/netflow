@@ -76,9 +76,17 @@ class SolveView(GenericAPIView):
     def post(self, request):
         supply_nodes = SupplyNode.objects.all()
         demand_nodes = DemandNode.objects.all()
+        storage_nodes = StorageNode.objects.all()
         arcs = Arc.objects.all()
 
-        network_serializer = NetworkSerializer({"supply_nodes": supply_nodes, "demand_nodes": demand_nodes, "arcs": arcs})
+        network_serializer = NetworkSerializer(
+            {
+                "supply_nodes": supply_nodes, 
+                "demand_nodes": demand_nodes,
+                "storage_nodes": storage_nodes,
+                "arcs": arcs
+            }
+        )
         serialized_data = network_serializer.data
 
         total_cost, arc_flows = solve_network_flow(serialized_data)

@@ -8,6 +8,7 @@ def optimise_network(data):
     
     supply_nodes = data['supply_nodes']
     demand_nodes = data['demand_nodes']
+    storage_nodes = data['storage_nodes']
     arcs = data['arcs']
 
     # Initialize the model
@@ -22,24 +23,37 @@ def optimise_network(data):
         
     # Supply constraints
     for supply in supply_nodes:
+        supply_node_name = supply['node_name']
+        supply_amount = supply['supply_amount']
         model += (
-            pl.lpSum(flow[supply['node_name'], arc['end_node']] for arc in arcs if arc['start_node'] == supply['node_name']) <= supply['supply_amount'], 
-            f"SupplyConstraint_{supply['node_name']}"
+            pl.lpSum(flow[supply_node_name, arc['end_node']] for arc in arcs if arc['start_node'] == supply_node_name) <= supply_amount, 
+            f"SupplyConstraint_{supply_node_name}"
         )
 
     # Demand constraints
     for demand in demand_nodes:
+        demand_node_name = demand['node_name']
+        demand_amount = demand['demand_amount']
         model += (
-            pl.lpSum(flow[arc['start_node'], demand['node_name']] for arc in arcs if arc['end_node'] == demand['node_name']) == demand['demand_amount'], 
-            f"DemandConstraint_{demand['node_name']}"
+            pl.lpSum(flow[arc['start_node'], demand_node_name] for arc in arcs if arc['end_node'] == demand_node_name) == demand_amount, 
+            f"DemandConstraint_{demand_node_name}"
         )
+
+    # Storage constraints
+    for storage in storage_nodes:
+        inflow = pl.lpSum(flow[arc['start_node'], storage['node_name']] for arc in arcs if arc['end_node'] == storage['node_name'])
+        outflow = pl.lpSum(flow[storage['node_name'], arc['end_node']] for arc in arcs if arc['start_node'] == storage['node_name'])
+        model += (inflow == outflow, f"StorageConstraint_{storage['node_name']}")
 
     # Arc capacity constraints
     for arc in arcs:
         if arc['capacity'] is not None:
+            start_node = arc['start_node']
+            end_node = arc['end_node']
+            capacity = arc['capacity']
             model += (
-                flow[arc['start_node'], arc['end_node']] <= arc['capacity'], 
-                f"CapacityConstraint_{arc['start_node']}_{arc['end_node']}"
+                flow[start_node, end_node] <= capacity, 
+                f"CapacityConstraint_{start_node}_{end_node}"
             )
 
     # Objective function: Minimize total cost
@@ -54,14 +68,19 @@ def optimise_network(data):
     # Print the results
     arc_flows = {}
     if pl.LpStatus[model.status] == 'Optimal':
+        
         print("Optimal value:", pl.value(model.objective))
+
         for arc in arcs:
-            flow_val = flow[arc['start_node'], arc['end_node']].varValue
+            start_node = arc['start_node']
+            end_node = arc['end_node']
+
+            flow_var = flow[start_node, end_node]
+            flow_val = flow_var.varValue
+
             if flow_val != 0:
                 arc_flows[arc['id']] = flow_val
-                supply_node = [node['node_name'] for node in supply_nodes if node['node_name'] == arc['start_node']][0]
-                demand_node = [node['node_name'] for node in demand_nodes if node['node_name'] == arc['end_node']][0]
-                print(f"Flow from {supply_node} to {demand_node}: {flow_val}")
+                print(f"Flow from {start_node} to {end_node}: {flow_val}")
     else:
         print("No optimal solution found.")
 

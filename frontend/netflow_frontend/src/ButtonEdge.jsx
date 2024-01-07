@@ -24,7 +24,25 @@ const ButtonEdge = ({
     });
     const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
 
-    const label = data && data.label ? data.label : '';
+    const costLabel = data && data.cost && data.cost !== 0 ? `Cost: ${data.cost}` : '';
+    const capacityLabel = data && data.capacity ? `Capacity: ${data.capacity}` : '';
+
+    const shouldRotateLabels = targetX < sourceX;
+
+    // Calculate the midpoint of the handles
+    const midpointX = (sourceX + targetX) / 2;
+    const midpointY = (sourceY + targetY) / 2;
+
+    // Calculate transform-origin based on the midpoint
+    const transformOrigin = `${midpointX}px ${midpointY}px`;
+
+    // Adjust startOffset based on rotation
+    const startOffset = shouldRotateLabels ? "60%" : "40%";
+
+    // Style for rotated labels
+    const rotateStyle = shouldRotateLabels
+        ? { transform: 'rotate(180deg)', transformOrigin: transformOrigin }
+        : {};
 
     return (
         <>
@@ -35,18 +53,27 @@ const ButtonEdge = ({
                 d={edgePath}
                 markerEnd={markerEnd}
             />
-            {label && (
-                <text>
+            {costLabel && (
+                <text style={rotateStyle}>
                     <textPath
                         href={`#${id}`}
-                        startOffset="50%"
+                        startOffset={startOffset}
                         textAnchor="middle"
-                        style={{ fontSize: '19px', fill: 'white' }}
+                        style={{ fontSize: '18px', fill: 'white' }}
                     >
-                        {/* Empty tspan for buffer */}
-                        <tspan dy="-0.4em" x="0"></tspan> 
-                        {/* Actual label */}
-                        <tspan dy="-0.4em" x="0">{label}</tspan>
+                        <tspan dy="-0.75em">{costLabel}</tspan>
+                    </textPath>
+                </text>
+            )}
+            {capacityLabel && (
+                <text style={rotateStyle}>
+                    <textPath
+                        href={`#${id}`}
+                        startOffset={startOffset}
+                        textAnchor="middle"
+                        style={{ fontSize: '18px', fill: 'white' }}
+                    >
+                        <tspan dy="1.2em">{capacityLabel}</tspan>
                     </textPath>
                 </text>
             )}
