@@ -1,6 +1,10 @@
 import uuid
 from django.db import models
 
+class Parameters(models.Model):
+    timesteps = models.IntegerField(default=1)
+
+
 class BaseNode(models.Model):
     node_name = models.CharField(primary_key=True, max_length=100)
 
@@ -29,4 +33,4 @@ class Solution(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     arcs = models.ManyToManyField('Arc', related_name='solutions')
     total_cost = models.FloatField()
-    arc_flows = models.JSONField(null=True) 
+    timestep_arc_flows = models.JSONField(null=True) 

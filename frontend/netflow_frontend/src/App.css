@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.slider-container {
+  position: absolute;
+  bottom: 40px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25%; /* Width of the slider */
+}
+
+.react-bootstrap-range-slider {
+  width: 100%; /* Make the slider take the full width of its container */
+}
+
+.react-bootstrap-range-slider-tooltip {
+  font-size: larger !important;
+  color: white !important;
+}

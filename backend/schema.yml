@@ -463,6 +463,157 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/parameters/:
+    get:
+      operationId: api_parameters_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Parameters'
+          description: ''
+    post:
+      operationId: api_parameters_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parameters'
+          description: ''
+  /api/parameters/{id}/:
+    get:
+      operationId: api_parameters_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this parameters.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parameters'
+          description: ''
+    put:
+      operationId: api_parameters_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this parameters.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parameters'
+          description: ''
+    patch:
+      operationId: api_parameters_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this parameters.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedParameters'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedParameters'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedParameters'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parameters'
+          description: ''
+    delete:
+      operationId: api_parameters_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this parameters.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/solutions/:
     get:
       operationId: api_solutions_list
@@ -995,6 +1146,8 @@ components:
     Network:
       type: object
       properties:
+        parameters:
+          $ref: '#/components/schemas/Parameters'
         supply_nodes:
           type: array
           items:
@@ -1003,6 +1156,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DemandNode'
+        storage_nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StorageNode'
         arcs:
           type: array
           items:
@@ -1010,7 +1167,14 @@ components:
       required:
       - arcs
       - demand_nodes
+      - parameters
+      - storage_nodes
       - supply_nodes
+    Parameters:
+      type: object
+      properties:
+        timesteps:
+          type: integer
     PatchedArc:
       type: object
       properties:
@@ -1043,6 +1207,11 @@ components:
         demand_amount:
           type: number
           format: double
+    PatchedParameters:
+      type: object
+      properties:
+        timesteps:
+          type: integer
     PatchedSolution:
       type: object
       properties:
@@ -1061,7 +1230,7 @@ components:
           items:
             $ref: '#/components/schemas/Arc'
           readOnly: true
-        arc_flows:
+        timestep_arc_flows:
           type: string
           readOnly: true
     PatchedStorageNode:
@@ -1103,14 +1272,14 @@ components:
           items:
             $ref: '#/components/schemas/Arc'
           readOnly: true
-        arc_flows:
+        timestep_arc_flows:
           type: string
           readOnly: true
       required:
-      - arc_flows
       - arcs
       - created_at
       - id
+      - timestep_arc_flows
       - total_cost
     StorageNode:
       type: object

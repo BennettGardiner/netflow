@@ -11,11 +11,14 @@ import ReactFlow, {
   Handle,
   useOnSelectionChange,
 } from 'reactflow';
+import RangeSlider from 'react-bootstrap-range-slider';
+import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 
 import EdgeModal from './EdgeModal';
 import Sidebar from './Sidebar';
 import NodeForm from './NodeForm';
+import './App.css';
 import './dark_theme.css';
 import './error_modal.css';
 import './colours.css';
@@ -27,6 +30,7 @@ const MAX_ZOOM_LEVEL = 8;
 
 const initialNodes = [];
 const initialEdges = [];
+
 
 const minimapNodeColor = (node) => {
   switch (node.data.type) {
@@ -115,6 +119,9 @@ const edgeTypes = {
 
 export default function App() {
 
+  const [timeSteps, setTimeSteps] = useState(1);
+
+  const [maxTimeSteps, setMaxTimeSteps] = useState(1);
 
   const [arcIdMap, setArcIdMap] = useState({}); // Map arc ids to edge ids
 
@@ -132,6 +139,22 @@ export default function App() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nodeData, setNodeData] = useState(null); 
+  const parametersId = 1; // The ID of your parameters object
+
+  // Function to update the maximum timesteps in the parameters object
+  const updateMaxTimesteps = async (maxTimesteps) => {
+    try {
+      const response = await axios.patch(`http://127.0.0.1:8000/api/parameters/${parametersId}/`, { timesteps: maxTimesteps });
+      console.log('Max timesteps updated:', response.data);
+    } catch (error) {
+      console.error('Error updating max timesteps:', error);
+    }
+  };
+
+  // Effect hook to detect changes in maxTimeSteps and update parameters
+  useEffect(() => {
+    updateMaxTimesteps(maxTimeSteps);
+  }, [maxTimeSteps]);
 
   // Function to handle selection change in React Flow
   const onSelectionChange = useCallback(({ nodes, edges }) => {
@@ -274,10 +297,10 @@ export default function App() {
     setIsEdgeCostModalOpen(true);
   }, [setEdges]);
 
-  const handleSubmit = (nodeInfo, nodeData) => {
+  const handleSubmit = async (nodeInfo, nodeData) => {
     let apiEndpoint;
     let newNodeData = {
-      node_name: nodeInfo.nodeLabel, // Only the name for backend
+      node_name: nodeInfo.nodeLabel,
     };
   
     switch (nodeData.type) {
@@ -289,69 +312,52 @@ export default function App() {
         apiEndpoint = 'http://127.0.0.1:8000/api/demand-nodes/';
         newNodeData['demand_amount'] = parseFloat(nodeInfo.amount);
         break;
-      case 'default':
+      case 'default': // Assuming 'default' type is for storage nodes
         apiEndpoint = 'http://127.0.0.1:8000/api/storage-nodes/';
+        newNodeData['initial_amount'] = parseFloat(nodeInfo.initialAmount); // Include the initial amount
         break;
       default:
         console.error('Unsupported node type');
         return;
     }
   
-    fetch(apiEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newNodeData),
-    })
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.node_name || 'Failed to create node');
-      }
-      return response.json();
-    })
-    .then((data) => {
-        console.log('Node created:', data);
-        const amount = nodeData.type === 'input' ? data.supply_amount : data.demand_amount;
-        let newNodeType;
-          switch (nodeData.type) {
-            case 'input':
-              newNodeType = 'supply';
-              break;
-            case 'output':
-              newNodeType = 'demand';
-              break;
-            case 'default':
-              newNodeType = 'storage';
-              break;
-            default:
-              console.error('Unsupported node type:', nodeData.type);
-              return;
-          }
-        const newNode = {
-          id: nodeInfo.nodeLabel,
-          type: nodeData.type,
-          data: { 
-            label: nodeInfo.nodeLabel,
-            amount: amount,
-            type: newNodeType // Add this to use in NodeContent for color
-          },
-          position: nodeData.position,
-          style: {
-            backgroundColor: nodeColor({ type: nodeData.type }),
-            color: 'white',
-            fontSize: '22px',
-          },
-        };
-        setNodes((ns) => ns.concat(newNode));
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        setIsErrorModalOpen(true);
-      });
-      setIsModalOpen(false);
-    };
+    try {
+      const response = await axios.post(apiEndpoint, newNodeData);
+      console.log('Node created:', response.data);
+      const amount = nodeData.type === 'input' ? response.data.supply_amount 
+                   : nodeData.type === 'output' ? response.data.demand_amount 
+                   : response.data.initial_amount; // For storage nodes, use initial amount
+  
+      const newNodeType = nodeData.type === 'input' ? 'supply' 
+                       : nodeData.type === 'output' ? 'demand' 
+                       : 'storage'; // For storage nodes
+  
+      const newNode = {
+        id: nodeInfo.nodeLabel,
+        type: nodeData.type,
+        data: { 
+          label: nodeInfo.nodeLabel,
+          amount: amount,
+          type: newNodeType
+        },
+        position: nodeData.position,
+        style: {
+          backgroundColor: nodeColor({ type: nodeData.type }),
+          color: 'white',
+          fontSize: '22px',
+        },
+      };
+  
+      setNodes((ns) => ns.concat(newNode));
+    } catch (error) {
+      console.error('Error creating node:', error);
+      setErrorMessage(error.message);
+      setIsErrorModalOpen(true);
+    }
+  
+    setIsModalOpen(false);
+  };
+  
 
   // Add this state to track if solution details should be displayed
   const [showSolutionDetails, setShowSolutionDetails] = useState(false);
@@ -371,34 +377,43 @@ export default function App() {
     }
   };
   
-  const [edgesUpdated, setEdgesUpdated] = useState(false);
   useEffect(() => {
-    if (latestSolution && latestSolution.arc_flows) {
+    if (latestSolution && latestSolution.timestep_arc_flows && timeSteps !== null) {
+      const timestepArcs = latestSolution.timestep_arc_flows[timeSteps]; // Get arcs for the selected timestep
+  
       const updatedEdges = edges.map(edge => {
-        // Check if the edge is part of the latest solution using arc_flows
-        const isPartOfSolution = Object.values(latestSolution.arc_flows).some(arcFlow => 
-          arcFlow.arc.start_node === edge.source && arcFlow.arc.end_node === edge.target
-        );
+        // Check if the edge is part of the solution for the selected timestep
+        const arcIdMapKey = `reactflow__edge-${edge.source}-${edge.target}`;
+        const backendArcId = arcIdMap[arcIdMapKey]; // Retrieve the backend ID from the mapping
+  
+        const isPartOfSolution = timestepArcs && backendArcId && timestepArcs[backendArcId];
   
         if (isPartOfSolution) {
           // Update the style for highlighting
-          // todo: base the stroke width on the flow amount compared to the overall amount in the network
-          return { ...edge, style: { stroke: 'green', strokeWidth: 6, zlevel: 100 } };
+          return { 
+            ...edge, 
+            style: { 
+              stroke: 'green', 
+              strokeWidth: Math.max(2, isPartOfSolution.amount * 2), // use amount to determine strokeWidth
+              zIndex: 100 
+            } 
+          };
         } else {
           // Reset style for non-solution edges
-          return { ...edge, style: { stroke: 'black', strokeWidth: 2 } };
+          return { 
+            ...edge, 
+            style: { 
+              stroke: 'black', 
+              strokeWidth: 2 
+            } 
+          };
         }
       });
   
-      // Update the edges state with the new array
       setEdges(updatedEdges);
     }
-  }, [latestSolution, edges]);  
+  }, [latestSolution, edges, timeSteps, arcIdMap]);
   
-  // Reset edgesUpdated when latestSolution changes
-  useEffect(() => {
-    setEdgesUpdated(true);
-  }, [latestSolution]);
 
   const handleShowSolutionDetails = () => {
     setShowSolutionDetails(!showSolutionDetails);
@@ -415,8 +430,8 @@ export default function App() {
   }, []);
   
   return (
-    <div style={{ height: '100vh', display: 'flex' }}>
-      <Sidebar onSolveClick={handleSolveClick} />
+    <div style={{ height: '100vh', display: 'flex', }}>
+      <Sidebar onSolveClick={handleSolveClick} onMaxTimestepsChange={setMaxTimeSteps} />
       <div style={{ flex: 1, position: 'relative' }} onDragOver={onDragOver} onDrop={onDrop} >
         <ReactFlowProvider>
           <ReactFlow 
@@ -436,9 +451,25 @@ export default function App() {
             <MiniMap nodeColor={minimapNodeColor} pannable={true}/>
             <Controls />
             <Background color="#aaa" gap={16} />
-          </ReactFlow>
           
+          </ReactFlow>
         </ReactFlowProvider>
+          
+        {maxTimeSteps > 1 && (
+          <div className="slider-container">
+            <RangeSlider
+              value={timeSteps}
+              onChange={changeEvent => setTimeSteps(changeEvent.target.value)}
+              min={0}
+              max={maxTimeSteps - 1}
+              step={1} // Snap to every integer value
+              tooltip='on' // Ensure the tooltip is enabled
+              tooltipLabel={currentValue => `${currentValue}`} // Optional: Custom label
+              tooltipStyle={{ fontSize: 'large', color: 'white' }} // Optional: Inline styles for tooltip
+            />
+          </div>
+        )}
+          
         <NodeForm
           isOpen={isModalOpen}
           onRequestClose={handleRequestClose}
@@ -457,20 +488,27 @@ export default function App() {
         {showSolutionDetails ? 'Hide\nSolution\nDetails' : 'Show\nSolution\nDetails'}
       </button>
 
-    {showSolutionDetails && latestSolution && (
-      <div>
-        <h3>Solution Details:</h3>
-        <p>Total Cost: {latestSolution.total_cost}</p>
-        <p>Utilized Arcs:</p>
-        <ul>
-          {Object.entries(latestSolution.arc_flows).map(([arcId, arcData]) => (
-            <li key={arcId}>
-              Arc {arcId}: Flow of {arcData.flow} from Node {arcData.arc.start_node} to Node {arcData.arc.end_node}, Cost: {arcData.arc.cost} x {arcData.flow} = {arcData.arc.cost * arcData.flow}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+      {showSolutionDetails && latestSolution && latestSolution.timestep_arc_flows && (
+        <div style={{ padding: "20px", margin: "10px", border: "1px solid #ccc", borderRadius: "5px" }}>
+          <h3>Solution Details:</h3>
+            <p style={{ fontSize: '24px', color: 'red' }}><strong>Total Cost: {latestSolution.total_cost}</strong></p>
+          <ul>
+            {Object.entries(latestSolution.timestep_arc_flows).map(([timestep, arcs]) => (
+              <div key={timestep}>
+                <h4>Timestep {timestep}</h4>
+                <ul>
+                  {Object.entries(arcs).map(([arcId, arcData]) => (
+                    <li key={arcId}>
+                      Arc {arcData.start_node} -> {arcData.end_node}: Flow of {arcData.amount}, Cost: {arcData.amount * arcData.cost}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </ul>
+        </div>
+      )}
+
     {isErrorModalOpen && (
       <div className="error-modal">
         <p>Error: {errorMessage}</p>

@@ -10,16 +10,16 @@ const EdgeCostModal = ({ isOpen, onRequestClose, onSubmit }) => {
         <div style={customStyles.modal}>
             <div style={customStyles.overlay} onClick={onRequestClose} />
             <div style={customStyles.content}>
-                <h2>Set Edge Cost</h2>
+                <h2> Cost per unit per timestep </h2>
                 <input
                     type="number"
                     value={cost}
                     onChange={(e) => setCost(e.target.value)}
-                    placeholder="Enter cost per unit"
+                    placeholder="Enter cost"
                     style={customStyles.input}
                 />
 
-                <h2>Set Edge Capacity</h2> 
+                <h2>Capacity</h2> 
                 <input
                     type="number"
                     value={capacity}
@@ -67,7 +67,7 @@ const customStyles = {
         zIndex: 1001, // Ensure content is above the overlay
     },
     input: {
-        width: '26%',
+        width: '40%',
         padding: '10px',
         marginBottom: '20px',
     },
