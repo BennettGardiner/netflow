@@ -1,3 +1,4 @@
+import json
 import logging
 import pulp as pl
 from django.shortcuts import get_object_or_404
@@ -7,10 +8,15 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.exceptions import ValidationError
 
 from .engine.solver import solve_network_flow
-from .models import BaseNode, DemandNode, Solution, StorageNode, SupplyNode, Arc
-from .serializers import BaseNodeSerializer, DemandNodeSerializer, ArcSerializer, NetworkSerializer, SolutionSerializer, StorageNodeSerializer, SupplyNodeSerializer
+from .models import BaseNode, DemandNode, Parameters, Solution, StorageNode, SupplyNode, Arc
+from .serializers import BaseNodeSerializer, DemandNodeSerializer, ArcSerializer, NetworkSerializer, ParametersSerializer, SolutionSerializer, StorageNodeSerializer, SupplyNodeSerializer
 
 logger = logging.getLogger(__name__)
+
+class ParametersViewSet(viewsets.ModelViewSet):
+    queryset = Parameters.objects.all()
+    serializer_class = ParametersSerializer
+
 
 class BaseNodeViewSet(viewsets.ModelViewSet):
     queryset = BaseNode.objects.all()
@@ -74,6 +80,7 @@ class SolveView(GenericAPIView):
     serializer_class = NetworkSerializer
 
     def post(self, request):
+        parameters = Parameters.objects.first()
         supply_nodes = SupplyNode.objects.all()
         demand_nodes = DemandNode.objects.all()
         storage_nodes = StorageNode.objects.all()
@@ -81,6 +88,7 @@ class SolveView(GenericAPIView):
 
         network_serializer = NetworkSerializer(
             {
+                "parameters": parameters,
                 "supply_nodes": supply_nodes, 
                 "demand_nodes": demand_nodes,
                 "storage_nodes": storage_nodes,
@@ -89,13 +97,13 @@ class SolveView(GenericAPIView):
         )
         serialized_data = network_serializer.data
 
-        total_cost, arc_flows = solve_network_flow(serialized_data)
+        total_cost, timestep_arc_flows = solve_network_flow(serialized_data)
         
         # create a Solution model instance with the arcs in utilised_arcs
         solution = Solution.objects.create(
-            total_cost=total_cost
+            total_cost=total_cost,
+            timestep_arc_flows=timestep_arc_flows 
         )
-        solution.arc_flows = arc_flows
-        solution.save()    
+        solution.save()
 
         return Response({"status": "success", "message": "Problem solved"}, status=status.HTTP_200_OK)

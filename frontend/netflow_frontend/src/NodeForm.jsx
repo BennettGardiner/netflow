@@ -8,12 +8,20 @@ function NodeForm({ isOpen, onRequestClose, onSubmit, nodeData }) {
   };
 
   const [nodeInfo, setNodeInfo] = useState(initialState);
+  const [initialAmount, setInitialAmount] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
       setNodeInfo(initialState); // Reset state when the modal is opened
     }
   }, [isOpen]); // Dependency array includes isOpen
+
+  useEffect(() => {
+    if (isOpen) {
+      setNodeInfo(initialState);
+      setInitialAmount(0); // Reset the initial amount
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
       setNodeInfo(initialState); // Reset the form state
@@ -26,8 +34,13 @@ function NodeForm({ isOpen, onRequestClose, onSubmit, nodeData }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(nodeInfo, nodeData);
-    setNodeInfo(initialState);
+    const nodeSubmissionInfo = { ...nodeInfo };
+    if (nodeData && nodeData.type === 'default') {
+      nodeSubmissionInfo.initialAmount = parseFloat(initialAmount);
+    }
+    onSubmit(nodeSubmissionInfo, nodeData);
+  setNodeInfo(initialState);
+    setInitialAmount(0);
   };
 
   const renderAmountField = () => {
@@ -62,9 +75,23 @@ function NodeForm({ isOpen, onRequestClose, onSubmit, nodeData }) {
               </div>
           );
       }
-      // Storage Node or others: No additional field
-      return null;
+      else if (nodeData.type === 'default') { // For storage nodes
+        return (
+          <div style={{ marginBottom: '10px' }}>
+            <label>
+              Initial amount:
+              <input 
+                type="number"
+                name="initialAmount"
+                value={initialAmount}
+                onChange={(e) => setInitialAmount(e.target.value)}
+              />
+            </label>
+          </div>
+        );
+      }
     }
+    return null;
 };
   
   return (
