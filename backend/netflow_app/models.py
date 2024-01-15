@@ -27,6 +27,7 @@ class Arc(models.Model):
     end_node = models.ForeignKey(BaseNode, on_delete=models.CASCADE, related_name='incoming_arcs')
     cost = models.FloatField(default=0)
     capacity = models.FloatField(default=None, null=True)
+    duration = models.IntegerField(default=0)
 
 
 class Solution(models.Model):

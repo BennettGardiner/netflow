@@ -1120,6 +1120,8 @@ components:
           type: number
           format: double
           nullable: true
+        duration:
+          type: integer
       required:
       - end_node
       - id
@@ -1192,6 +1194,8 @@ components:
           type: number
           format: double
           nullable: true
+        duration:
+          type: integer
     PatchedBaseNode:
       type: object
       properties:

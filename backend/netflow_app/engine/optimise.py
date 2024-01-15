@@ -17,17 +17,22 @@ def optimise_network(data):
     model = pl.LpProblem("NetworkOptimization", pl.LpMinimize)
 
     flow = {}
+    arc_usage = {}
     for timestep in range(timesteps):
-        # Decision variables for flow on each arc at each timestep
+        
         for arc in arcs:
+            # Decision variables for flow on each arc at each timestep
             start_node = arc['start_node']
             end_node = arc['end_node']
             flow[start_node, end_node, timestep] = pl.LpVariable(f'flow_{start_node}_{end_node}_{timestep}', lowBound=0, cat='Continuous')
             print(f"Created flow variable for {start_node} to {end_node} at timestep {timestep}")
 
-        # Include storage arcs with the same start and end node
+            # Binary variables to indicate whether an arc is used at each timestep
+            arc_usage[start_node, end_node, timestep] = pl.LpVariable(f'arc_usage_{start_node}_{end_node}_{timestep}', cat='Binary')
+
+        # Create storage arcs with the same start and end node
         for storage in storage_nodes:
-            storage_node_name = storage['node_name']
+            storage_node_name = storage.node_name
             flow[storage_node_name, storage_node_name, timestep] = pl.LpVariable(f'flow_{storage_node_name}_{storage_node_name}_{timestep}', lowBound=0, cat='Continuous')
 
     # Supply constraints over all timesteps
@@ -60,7 +65,7 @@ def optimise_network(data):
 
     # Storage balance constraints over all timesteps
     for storage in storage_nodes:
-        storage_node_name = storage['node_name']
+        storage_node_name = storage.node_name
         initial_amount = storage['initial_amount']
 
         for timestep in range(timesteps):
@@ -70,10 +75,10 @@ def optimise_network(data):
             previous_storage_level = initial_amount if timestep == 0 else flow[storage_node_name, storage_node_name, timestep-1]
             current_storage_level = flow[storage_node_name, storage_node_name, timestep]
             
-            model += (inflow + previous_storage_level == current_storage_level + outflow, f"StorageBalance_{storage_node_name}_{timestep}")
+            model += (inflow + previous_storage_level == current_storage_level + outflow, f"StorageConstraint_{storage_node_name}_{timestep}")
             print(f"""Created storage balance constraint for {storage_node_name} at timestep {timestep} of 
                   {inflow} + {previous_storage_level} = {current_storage_level} + {outflow}""")
-
+    
     # Arc capacity constraints
     for timestep in range(timesteps):
         for arc in arcs:
@@ -86,6 +91,7 @@ def optimise_network(data):
                     f"CapacityConstraint_{start_node}_{end_node}_{timestep}"
                 )
                 print(f"Created capacity constraint for {start_node} to {end_node} of capacity {capacity} at timestep {timestep}")
+
 
     # Objective function: Minimize total cost
     total_cost = pl.lpSum(

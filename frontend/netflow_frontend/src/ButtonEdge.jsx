@@ -26,6 +26,7 @@ const ButtonEdge = ({
 
     const costLabel = data && data.cost && data.cost !== 0 ? `Cost: ${data.cost}` : '';
     const capacityLabel = data && data.capacity ? `Capacity: ${data.capacity}` : '';
+    const durationLabel = data && data.duration ? `Duration: ${data.duration}` : '';
 
     const shouldRotateLabels = targetX < sourceX;
 
@@ -74,6 +75,18 @@ const ButtonEdge = ({
                         style={{ fontSize: '18px', fill: 'white' }}
                     >
                         <tspan dy="1.2em">{capacityLabel}</tspan>
+                    </textPath>
+                </text>
+            )}
+            {durationLabel && (
+                <text style={rotateStyle}>
+                    <textPath
+                        href={`#${id}`}
+                        startOffset={startOffset}
+                        textAnchor="middle"
+                        style={{ fontSize: '18px', fill: 'white' }}
+                    >
+                        <tspan dy="2.7em">{durationLabel}</tspan>
                     </textPath>
                 </text>
             )}

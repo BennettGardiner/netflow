@@ -47,17 +47,19 @@ class ArcViewSet(viewsets.ModelViewSet):
         end_node_name = self.request.data.get('end_node')
         cost = self.request.data.get('cost')
         capacity = self.request.data.get('capacity')
+        duration = self.request.data.get('duration')
 
         start_node = get_object_or_404(BaseNode, node_name=start_node_name)
         end_node = get_object_or_404(BaseNode, node_name=end_node_name)
 
-        serializer.save(start_node=start_node, end_node=end_node, cost=cost)
+        serializer.save(start_node=start_node, end_node=end_node, cost=cost, capacity=capacity, duration=duration)
 
     def perform_update(self, serializer):
         start_node_name = self.request.data.get('start_node')
         end_node_name = self.request.data.get('end_node')
         cost = self.request.data.get('cost')
         capacity = self.request.data.get('capacity')
+        duration = self.request.data.get('duration')
 
         if start_node_name:
             start_node = get_object_or_404(BaseNode, node_name=start_node_name)
@@ -67,6 +69,8 @@ class ArcViewSet(viewsets.ModelViewSet):
             serializer.instance.end_node = end_node
         if cost is not None:
             serializer.instance.cost = cost
+        if duration is not None:
+            serializer.instance.duration = duration
 
         serializer.save()
 
