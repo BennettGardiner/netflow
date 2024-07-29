@@ -38,7 +38,7 @@ def create_engine_demand_nodes(nodes, timesteps):
     for node in nodes:
         for timestep in range(timesteps):
             engine_node_id = f"{node['node_name']}_{timestep}"
-            demand_amount = node['demand_amount'] if timestep == 0 else 0
+            demand_amount = node['demand_amount'] if timestep == timesteps - 1 else 0
             engine_nodes.append(EngineDemandNode(id=engine_node_id, timestep=timestep, demand_amount=demand_amount))
     return engine_nodes
 
