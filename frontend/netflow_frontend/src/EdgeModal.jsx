@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const EdgeCostModal = ({ isOpen, onRequestClose, onSubmit }) => {
     const [cost, setCost] = useState('');
     const [capacity, setCapacity] = useState('');
+    const [duration, setDuration] = useState('');
 
     if (!isOpen) return null;
 
@@ -19,7 +20,7 @@ const EdgeCostModal = ({ isOpen, onRequestClose, onSubmit }) => {
                     style={customStyles.input}
                 />
 
-                <h2>Capacity</h2> 
+                <h2>Capacity of arc</h2> 
                 <input
                     type="number"
                     value={capacity}
@@ -28,8 +29,16 @@ const EdgeCostModal = ({ isOpen, onRequestClose, onSubmit }) => {
                     style={customStyles.input}
                 />
 
+                <h2>Duration of arc</h2> 
+                <input
+                    type="number"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    placeholder="Enter duration"
+                    style={customStyles.input}
+                />
                 <div>
-                    <button onClick={() => onSubmit(cost, capacity)} style={customStyles.button}>Submit</button> {/* Pass capacity to onSubmit */}
+                    <button onClick={() => onSubmit(cost, capacity, duration)} style={customStyles.button}>Submit</button> {/* Pass capacity to onSubmit */}
                     <button onClick={onRequestClose} style={customStyles.button}>Cancel</button>
                 </div>
             </div>

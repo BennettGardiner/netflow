@@ -245,24 +245,26 @@ export default function App() {
   const [isEdgeCostModalOpen, setIsEdgeCostModalOpen] = useState(false);
   const [newEdgeData, setNewEdgeData] = useState(null); // To temporarily store new edge data
 
-  const handleEdgeSubmission = (cost, capacity) => {
+  const handleEdgeSubmission = (cost, capacity, duration) => {
     if (newEdgeData) {
-        const edgeWithCostAndCapacity = { 
+        const edgeWithExtraData = { 
             ...newEdgeData, 
             data: { 
                 cost: cost ? parseFloat(cost) : 0,
-                capacity: capacity ? parseFloat(capacity) : undefined
+                capacity: capacity ? parseFloat(capacity) : undefined,
+                duration: duration ? parseFloat(duration) : undefined,
             }
         };
 
-        setEdges((eds) => addEdge(edgeWithCostAndCapacity, eds));
+        setEdges((eds) => addEdge(edgeWithExtraData, eds));
 
-        console.log('Edge created from', newEdgeData.source, 'to', newEdgeData.target, 'with cost', cost, 'and capacity', capacity);
+        console.log('Edge created from', newEdgeData.source, 'to', newEdgeData.target, 'with cost', cost, 'and capacity', capacity, 'and duration', duration);
         const newEdgeForPost = {
             start_node: newEdgeData.source,
             end_node: newEdgeData.target,
             cost: cost ? parseFloat(cost) : 0,
-            capacity: parseFloat(capacity)
+            capacity: parseFloat(capacity),
+            duration: parseFloat(duration),
         };
 
         const frontendEdgeId = `reactflow__edge-${newEdgeData.source}-${newEdgeData.target}`;
@@ -277,7 +279,7 @@ export default function App() {
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log('Arc', edgeWithCostAndCapacity, 'created with cost:', data.cost, 'and capacity:', data.capacity);
+            console.log('Arc', edgeWithExtraData, 'created with cost:', data.cost, 'and capacity:', data.capacity, 'and duration:', data.duration);
             setArcIdMap((prevMap) => ({ ...prevMap, [frontendEdgeId]: data.id  }));
         })
         .catch((error) => {
@@ -499,7 +501,7 @@ export default function App() {
                 <ul>
                   {Object.entries(arcs).map(([arcId, arcData]) => (
                     <li key={arcId}>
-                      Arc {arcData.start_node} -> {arcData.end_node}: Flow of {arcData.amount}, Cost: {arcData.amount * arcData.cost}
+                      Arc {arcData.start_node} -{'>'} {arcData.end_node}: Flow of {arcData.amount}, Cost: {arcData.amount * arcData.cost}
                     </li>
                   ))}
                 </ul>
@@ -519,9 +521,9 @@ export default function App() {
             <EdgeModal 
                 isOpen={isEdgeCostModalOpen}
                 onRequestClose={() => setIsEdgeCostModalOpen(false)}
-                onSubmit={(cost, capacity) => {
+                onSubmit={(cost, capacity, duration) => {
                     setIsEdgeCostModalOpen(false);
-                    handleEdgeSubmission(cost, capacity);
+                    handleEdgeSubmission(cost, capacity, duration);
                 }}
             />
         )}

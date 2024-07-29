@@ -34,7 +34,7 @@ class StorageNodeSerializer(serializers.ModelSerializer):
 class ArcSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arc
-        fields = ['id', 'start_node', 'end_node', 'cost', 'capacity']
+        fields = ['id', 'start_node', 'end_node', 'cost', 'capacity', 'duration']
     
 
 class NetworkSerializer(serializers.Serializer):
