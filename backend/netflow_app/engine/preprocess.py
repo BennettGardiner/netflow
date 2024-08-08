@@ -58,9 +58,9 @@ def create_engine_arcs(engine_nodes: List[EngineNode], arcs, timesteps):
     
     for arc in arcs:
         duration = arc['duration']
-        for timestep in range(timesteps - duration):
+        for timestep in range(timesteps - duration + 1):
             start_engine_node_id = f"{arc['start_node']}_{timestep}"
-            end_engine_node_id = f"{arc['end_node']}_{timestep + duration}"
+            end_engine_node_id = f"{arc['end_node']}_{timestep + duration - 1}"
             start_engine_node = node_dict.get(start_engine_node_id)
             end_engine_node = node_dict.get(end_engine_node_id)
 

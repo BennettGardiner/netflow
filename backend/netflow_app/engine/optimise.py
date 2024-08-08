@@ -99,7 +99,7 @@ def optimise_network(data):
             if flow_val != 0:
                 start_timestep = arc.start_engine_node.timestep
                 end_timestep = arc.end_engine_node.timestep
-                for timestep in range(start_timestep, end_timestep):
+                for timestep in range(start_timestep, end_timestep + 1):
                     timestep_arc_flows[timestep][arc.id] = {
                         "amount": flow_val,
                         "cost": arc.cost if timestep == start_timestep else 0,
